@@ -1,4 +1,4 @@
-FROM ghcr.io/sdr-enthusiasts/docker-baseimage:python
+FROM ghcr.io/sdr-enthusiasts/docker-baseimage:base
 
 RUN set -x && \
 # define packages needed for installation and general management of the container:
@@ -7,7 +7,7 @@ RUN set -x && \
     KEPT_PACKAGES+=(psmisc) && \
     KEPT_PACKAGES+=(mono-complete) && \
     # added for debugging
-    KEPT_PACKAGES+=(procps nano aptitude netcat) && \
+    KEPT_PACKAGES+=(nano netcat) && \
 #
 # Install all these packages:
     apt-get update && \
@@ -26,8 +26,8 @@ RUN set -x && \
 #
 # Install VRS:
 RUN set -x && \
-   mkdir -p /opt/vrs
-   pushd /opt/vrs
+   mkdir -p /opt/vrs && \
+   pushd /opt/vrs && \
      curl -sL -o 1.tar.gz https://www.virtualradarserver.co.uk/Files/VirtualRadar.tar.gz && \
      curl -sL -o 2.tar.gz https://www.virtualradarserver.co.uk/Files/VirtualRadar.LanguagePack.tar.gz && \
      curl -sL -o 3.tar.gz https://www.virtualradarserver.co.uk/Files/VirtualRadar.WebAdminPlugin.tar.gz && \
@@ -35,6 +35,10 @@ RUN set -x && \
      curl -sL -o 5.tar.gz https://www.virtualradarserver.co.uk/Files/VirtualRadar.TileServerCachePlugin.tar.gz && \
      for i in *.tar.gz; do tar zxf $i; done && \
    popd && \
+#
+# Add some things to make it easier to debug:
+echo "alias dir=\"ls -alsvH\"" >> /root/.bashrc && \
+echo "alias nano=\"nano -l\"" >> /root/.bashrc
 
 COPY rootfs/ /
 
