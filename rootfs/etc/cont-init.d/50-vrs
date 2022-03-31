@@ -18,7 +18,7 @@ mkdir -p "${VRS_CONFIG_DIR}/flags"
 mkdir -p "${VRS_CONFIG_DIR}/silhouettes"
 mkdir -p "${VRS_CONFIG_DIR}/photos"
 
-if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" $LINK && unzip -qq -o -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
+if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" ${SILH_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
 then
   echo "[$APPNAME][$(date)] Silhouettes installed successfully"
 else
