@@ -2,7 +2,7 @@ ersion: '3.8'
 
 services:
     vrs:
-        image: kx1t/vrs
+        image: ghcr.io/sdr-enthusiasts/vrs
         tty: true
         container_name: vrs
         hostname: vrs
