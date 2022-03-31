@@ -5,9 +5,9 @@ APPNAME="$(hostname)/vrs-runtime"
 VRS_DIR="/opt/vrs"
 VRS_EXEC="mono VirtualRadar.exe"
 VRS_CMDLINE=()
-VRS_CMDLINE+=("--nogui")
-VRS_CMDLINE+=("--createAdmin:${VRS_ADMIN_USERNAME}")
-VRS_CMDLINE+=("--createPassword:${VRS_ADMIN_PASSWORD}")
+VRS_CMDLINE+=("-nogui")
+VRS_CMDLINE+=("-createAdmin:${VRS_ADMIN_USERNAME}")
+VRS_CMDLINE+=("-createPassword:${VRS_ADMIN_PASSWORD}")
 
 # start VRS and keep it in the foreground:
 cd "${VRS_DIR}"
