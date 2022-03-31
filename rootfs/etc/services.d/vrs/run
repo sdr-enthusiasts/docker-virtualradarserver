@@ -6,6 +6,7 @@ VRS_DIR="/opt/vrs"
 VRS_EXEC="mono VirtualRadar.exe"
 VRS_CMDLINE=()
 VRS_CMDLINE+=("-nogui")
+[[ -n "${VRS_CULTURE}" ]] && VRS_CMDLINE+=("-culture:${VRS_CULTURE}") || true
 
 # start VRS and keep it in the foreground:
 cd "${VRS_DIR}"

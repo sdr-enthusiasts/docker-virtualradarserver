@@ -12,6 +12,7 @@ services:
         environment:
             - VRS_ADMIN_USERNAME=admin
             - VRS_ADMIN_PASSWORD=password
+            - VRS_CULTURE=en-US
         tmpfs:
             - /tmp:rw,nosuid,nodev,noexec,relatime,size=128M
         volumes:
