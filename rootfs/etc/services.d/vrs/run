@@ -1,0 +1,13 @@
+#!/usr/bin/with-contenv bash
+#shellcheck shell=bash
+
+APPNAME="$(hostname)/vrs-runtime"
+VRS_DIR="/opt/vrs"
+VRS_EXEC="mono VirtualRadar.exe"
+VRS_CMDLINE=()
+VRS_CMDLINE+=("--nogui")
+VRS_CMDLINE+=("--createAdmin:${VRS_ADMIN_USERNAME}")
+VRS_CMDLINE+=("--createPassword:${VRS_ADMIN_PASSWORD}")
+
+# start VRS and keep it in the foreground:
+exec ${VRS_EXEC} ${VRS_CMDLINE[@]} | stdbuf -o0 awk -v label=${APPNAME} '{print "[label][" strftime("%F %T%z", systime()) "] " $0}'
