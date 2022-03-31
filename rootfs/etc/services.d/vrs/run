@@ -6,10 +6,8 @@ VRS_DIR="/opt/vrs"
 VRS_EXEC="mono VirtualRadar.exe"
 VRS_CMDLINE=()
 VRS_CMDLINE+=("-nogui")
-VRS_CMDLINE+=("-createAdmin:${VRS_ADMIN_USERNAME}")
-VRS_CMDLINE+=("-password:${VRS_ADMIN_PASSWORD}")
 
 # start VRS and keep it in the foreground:
 cd "${VRS_DIR}"
 echo "[$APPNAME][$(date)] Starting ${VRS_DIR}/${VRS_EXEC} ${VRS_CMDLINE[@]}"
-exec ${VRS_EXEC} ${VRS_CMDLINE[@]} | stdbuf -o0 awk -v label=${APPNAME} '{print "[$label][" strftime("%F %T%z", systime()) "] " $0}'
+exec ${VRS_EXEC} ${VRS_CMDLINE[@]} | stdbuf -o0 awk -v label=${APPNAME} '{print "[" label "][" strftime("%F %T%z", systime()) "] " $0}'

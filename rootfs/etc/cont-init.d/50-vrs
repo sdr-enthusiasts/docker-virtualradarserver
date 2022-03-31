@@ -1,0 +1,24 @@
+#!/usr/bin/with-contenv bash
+#shellcheck shell=bash
+
+APPNAME="$(hostname)/vrs-init"
+VRS_DIR="/opt/vrs"
+VRS_EXEC="mono VirtualRadar.exe"
+VRS_CMDLINE=()
+VRS_CMDLINE+=("-nogui")
+VRS_CMDLINE+=("-createAdmin:${VRS_ADMIN_USERNAME}")
+VRS_CMDLINE+=("-password:${VRS_ADMIN_PASSWORD}")
+
+MAXTIME=15
+
+# Starting VRS temporarily to create a username and password if none exist
+# If VRS has been initialized previously, it will complain and exit
+# If it hasn't, a username / password and a bunch of other files will be created...
+#    ...and VRS will actually stay up and run. We will shut it down after a max runtime of $MAXTIME secs.
+
+cd "${VRS_DIR}"
+echo "[$APPNAME][$(date)] Initializing Virtual Radar Server..."
+timeout $MAXTIME exec ${VRS_EXEC} ${VRS_CMDLINE[@]} >/dev/null 2>&1
+echo "[$APPNAME][$(date)] Virtual Radar Server has been initialized."
+
+exit 0
