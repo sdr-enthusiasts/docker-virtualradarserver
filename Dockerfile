@@ -29,11 +29,11 @@ RUN set -x && \
 RUN set -x && \
    mkdir -p /opt/vrs && \
    pushd /opt/vrs && \
-     curl -sL -o 1.tar.gz https://www.virtualradarserver.co.uk/Files/VirtualRadar.tar.gz && \
-     curl -sL -o 2.tar.gz https://www.virtualradarserver.co.uk/Files/VirtualRadar.LanguagePack.tar.gz && \
-     curl -sL -o 3.tar.gz https://www.virtualradarserver.co.uk/Files/VirtualRadar.WebAdminPlugin.tar.gz && \
-     curl -sL -o 4.tar.gz https://www.virtualradarserver.co.uk/Files/VirtualRadar.DatabaseWriterPlugin.tar.gz && \
-     curl -sL -o 5.tar.gz https://www.virtualradarserver.co.uk/Files/VirtualRadar.TileServerCachePlugin.tar.gz && \
+     curl -sL -o 1.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-6-mono/VirtualRadar-3.0.0-preview-6.tar.gz && \
+     curl -sL -o 2.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-6-mono/LanguagePack-3.0.0-preview-6.tar.gz && \
+     curl -sL -o 3.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-6-mono/Plugin-WebAdmin-3.0.0-preview-6.tar.gz && \
+     curl -sL -o 4.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-6-mono/Plugin-DatabaseWriter-3.0.0-preview-6.tar.gz && \
+     curl -sL -o 5.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-6-mono/Plugin-TileServerCache-3.0.0-preview-6.tar.gz && \
      for i in *.tar.gz; do tar zxf $i; done && \
    popd && \
 #
