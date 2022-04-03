@@ -10,6 +10,8 @@ VRS_CMDLINE+=("-createAdmin:${VRS_ADMIN_USERNAME}")
 VRS_CMDLINE+=("-password:${VRS_ADMIN_PASSWORD}")
 VRS_CONFIG_DIR="/root/.local/share/VirtualRadar"
 SILH_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/Silhouettes.zip"
+FLAGS_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/OperatorFlags.zip"
+
 MAXTIME=15
 
 echo "[$APPNAME][$(date)] Initializing Virtual Radar Server..."
@@ -23,6 +25,13 @@ then
   echo "[$APPNAME][$(date)] Silhouettes installed successfully"
 else
     echo "[$APPNAME][$(date)] Silhouettes not installed - failure"
+fi
+
+if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/OperatorFlags.zip" ${FLAGS_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/flags" "${VRS_CONFIG_DIR}/OperatorFlags.zip"
+then
+  echo "[$APPNAME][$(date)] Operator Flags installed successfully"
+else
+    echo "[$APPNAME][$(date)] Operator Flags not installed - failure"
 fi
 
 # Starting VRS temporarily to create a username and password if none exist
