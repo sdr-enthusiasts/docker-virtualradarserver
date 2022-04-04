@@ -11,6 +11,7 @@ VRS_CMDLINE+=("-password:${VRS_ADMIN_PASSWORD}")
 VRS_CONFIG_DIR="/root/.local/share/VirtualRadar"
 SILH_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/Silhouettes.zip"
 FLAGS_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/OperatorFlags.zip"
+FLAGSDB_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/BaseStation.sqb"
 
 MAXTIME=15
 
@@ -19,7 +20,9 @@ echo "[$APPNAME][$(date)] Initializing Virtual Radar Server..."
 mkdir -p "${VRS_CONFIG_DIR}/flags"
 mkdir -p "${VRS_CONFIG_DIR}/silhouettes"
 mkdir -p "${VRS_CONFIG_DIR}/photos"
+mkdir -p "${VRS_CONFIG_DIR}/db"
 
+#download and install silhouettes
 if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" ${SILH_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
 then
   echo "[$APPNAME][$(date)] Silhouettes installed successfully"
@@ -27,11 +30,20 @@ else
     echo "[$APPNAME][$(date)] Silhouettes not installed - failure"
 fi
 
+#download and install operator flags
 if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/OperatorFlags.zip" ${FLAGS_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/flags" "${VRS_CONFIG_DIR}/OperatorFlags.zip"
 then
   echo "[$APPNAME][$(date)] Operator Flags installed successfully"
 else
     echo "[$APPNAME][$(date)] Operator Flags not installed - failure"
+fi
+
+#download and install pre-filled DB for operator flags
+if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/BaseStation.sqb" ${FLAGSDB_LINK}
+then
+  echo "[$APPNAME][$(date)] Database for Operator Flags installed successfully"
+else
+    echo "[$APPNAME][$(date)] Database for Operator Flags not installed - failure"
 fi
 
 # Starting VRS temporarily to create a username and password if none exist
