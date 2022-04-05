@@ -55,4 +55,16 @@ cd "${VRS_DIR}"
 timeout $MAXTIME exec ${VRS_EXEC} ${VRS_CMDLINE[@]} >/dev/null 2>&1
 echo "[$APPNAME][$(date)] Virtual Radar Server has been initialized."
 
+#Injecting settings for silhouettes, OpFlags and DB into Configuration.xml
+sed -i "/^  <BaseStationSettings>.*/a \    \<DatabaseFileName>/root/.local/share/VirtualRadar/db/BaseStation.sqb</DatabaseFileName>" "${VRS_CONFIG_DIR}/Configuration.xml"
+echo "[$APPNAME][$(date)] Added database filename to Configuration.xml"
+
+sed -i "/^  <BaseStationSettings>.*/a \    \<OperatorFlagsFolder>/root/.local/share/VirtualRadar/flags</OperatorFlagsFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
+echo "[$APPNAME][$(date)] Added Operator Flags folder to Configuration.xml"
+
+sed -i "/^  <BaseStationSettings>.*/a \    \<SilhouettesFolder>/root/.local/share/VirtualRadar/silhouettes</SilhouettesFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
+echo "[$APPNAME][$(date)] Added Silhouettes folger to Configuration.xml"
+
+echo "[$APPNAME][$(date)] Finished basic configuration."
+
 exit 0
