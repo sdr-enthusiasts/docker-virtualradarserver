@@ -56,14 +56,29 @@ timeout $MAXTIME exec ${VRS_EXEC} ${VRS_CMDLINE[@]} >/dev/null 2>&1
 echo "[$APPNAME][$(date)] Virtual Radar Server has been initialized."
 
 #Injecting settings for silhouettes, OpFlags and DB into Configuration.xml
-sed -i "/^  <BaseStationSettings>.*/a \    \<DatabaseFileName>/root/.local/share/VirtualRadar/db/BaseStation.sqb</DatabaseFileName>" "${VRS_CONFIG_DIR}/Configuration.xml"
-echo "[$APPNAME][$(date)] Added database filename to Configuration.xml"
+if ! grep -q "<DatabaseFileName>" "${VRS_CONFIG_DIR}/Configuration.xml"
+ then
+  sed -i "/^  <BaseStationSettings>.*/a \    \<DatabaseFileName>/root/.local/share/VirtualRadar/db/BaseStation.sqb</DatabaseFileName>" "${VRS_CONFIG_DIR}/Configuration.xml"
+  echo "[$APPNAME][$(date)] Added database filename to Configuration.xml"
+ else
+  echo "[$APPNAME][$(date)] DatabaseFileName found, not touching config."
+fi
 
-sed -i "/^  <BaseStationSettings>.*/a \    \<OperatorFlagsFolder>/root/.local/share/VirtualRadar/flags</OperatorFlagsFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
-echo "[$APPNAME][$(date)] Added Operator Flags folder to Configuration.xml"
+if ! grep -q "<OperatorFlagsFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
+ then
+  sed -i "/^  <BaseStationSettings>.*/a \    \<OperatorFlagsFolder>/root/.local/share/VirtualRadar/flags</OperatorFlagsFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
+  echo "[$APPNAME][$(date)] Added Operator Flags folder to Configuration.xml"
+ else
+  echo "[$APPNAME][$(date)] OperatorFlagsFolder found, not touching config."
+fi
 
-sed -i "/^  <BaseStationSettings>.*/a \    \<SilhouettesFolder>/root/.local/share/VirtualRadar/silhouettes</SilhouettesFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
-echo "[$APPNAME][$(date)] Added Silhouettes folger to Configuration.xml"
+if ! grep -q "<SilhouettesFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
+ then
+  sed -i "/^  <BaseStationSettings>.*/a \    \<SilhouettesFolder>/root/.local/share/VirtualRadar/silhouettes</SilhouettesFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
+  echo "[$APPNAME][$(date)] Added Silhouettes folger to Configuration.xml"
+ else
+  echo "[$APPNAME][$(date)] SilhouettesFolder found, not touching config."
+fi
 
 echo "[$APPNAME][$(date)] Finished basic configuration."
 
