@@ -39,11 +39,16 @@ else
 fi
 
 #download and install pre-filled DB for operator flags
-if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/BaseStation.sqb" ${FLAGSDB_LINK}
-then
-  echo "[$APPNAME][$(date)] Database for Operator Flags installed successfully"
-else
-    echo "[$APPNAME][$(date)] Database for Operator Flags not installed - failure"
+if [ ! -e "${VRS_CONFIG_DIR}/db/BaseStation.sqb" ]
+ then
+  if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/BaseStation.sqb" ${FLAGSDB_LINK}
+  then
+    echo "[$APPNAME][$(date)] Database for Operator Flags installed successfully"
+  else
+      echo "[$APPNAME][$(date)] Database for Operator Flags not installed - failure"
+  fi
+ else
+  echo "[$APPNAME][$(date)] Found an existing DB in $VRS_CONFIG_DIR, not touching anything!"
 fi
 
 # Starting VRS temporarily to create a username and password if none exist
