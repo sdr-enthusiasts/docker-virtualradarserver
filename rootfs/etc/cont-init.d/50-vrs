@@ -9,11 +9,25 @@ VRS_CMDLINE+=("-nogui")
 VRS_CMDLINE+=("-createAdmin:${VRS_ADMIN_USERNAME}")
 VRS_CMDLINE+=("-password:${VRS_ADMIN_PASSWORD}")
 VRS_CONFIG_DIR="/root/.local/share/VirtualRadar"
+#Silhouettes, OpFlags and DB
 SILH_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/Silhouettes.zip"
 FLAGS_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/OperatorFlags.zip"
 FLAGSDB_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/BaseStation.sqb"
-
 MAXTIME=15
+
+#Variables for optimized downloads
+WHICHREPO="https://api.github.com/repos/rikgale/VRSOperatorFlags/branches"
+WHICHBRANCH="main"
+ACTUALFILE="$VRS_CONFIG_DIR/commitid"
+ACTUAL=$(<"$ACTUALFILE")
+PROBE=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO | awk  "c&&!--c;/$WHICHBRANCH/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
+
+#if the helper file to store the commit ID isn't there, create it empty
+touch $ACTUALFILE
+
+#debugging stuff
+#echo $ACTUAL
+#echo $PROBE
 
 echo "[$APPNAME][$(date)] Initializing Virtual Radar Server..."
 
@@ -22,30 +36,39 @@ mkdir -p "${VRS_CONFIG_DIR}/silhouettes"
 mkdir -p "${VRS_CONFIG_DIR}/photos"
 mkdir -p "${VRS_CONFIG_DIR}/db"
 
-#download and install silhouettes
-if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" ${SILH_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
-then
-  echo "[$APPNAME][$(date)] Silhouettes installed successfully"
-else
+#if there is a change in the commit ID, download and install sil/opflags
+echo "[$APPNAME][$(date)] Checking for Sil / OpFlags repo update..."
+if ! [[ $ACTUAL == $PROBE ]]
+ then
+  echo "[$APPNAME][$(date) Looks like there was an update for sil/OpFlag. Going to download the files"
+  echo $PROBE >> $ACTUALFILE
+  echo "[$APPNAME][$(date) Updated $ACTUALFILE to commit ID $PROBE"  
+  if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" ${SILH_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
+   then
+    echo "[$APPNAME][$(date)] Silhouettes installed successfully"
+    else
     echo "[$APPNAME][$(date)] Silhouettes not installed - failure"
-fi
+  fi
 
 #download and install operator flags
-if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/OperatorFlags.zip" ${FLAGS_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/flags" "${VRS_CONFIG_DIR}/OperatorFlags.zip"
-then
-  echo "[$APPNAME][$(date)] Operator Flags installed successfully"
-else
+  if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/OperatorFlags.zip" ${FLAGS_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/flags" "${VRS_CONFIG_DIR}/OperatorFlags.zip"
+   then
+    echo "[$APPNAME][$(date)] Operator Flags installed successfully"
+   else
     echo "[$APPNAME][$(date)] Operator Flags not installed - failure"
+  fi
+ else 
+  echo "[$APPNAME][$(date)] Still the same commit ID, nothing was downloaded"
 fi
 
-#download and install pre-filled DB for operator flags
+#download and install pre-filled DB for operator flags. As this should only happen once, no commit id check needed
 if [ ! -e "${VRS_CONFIG_DIR}/db/BaseStation.sqb" ]
  then
   if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/BaseStation.sqb" ${FLAGSDB_LINK}
-  then
+   then
     echo "[$APPNAME][$(date)] Database for Operator Flags installed successfully"
-  else
-      echo "[$APPNAME][$(date)] Database for Operator Flags not installed - failure"
+   else
+    echo "[$APPNAME][$(date)] Database for Operator Flags not installed - failure"
   fi
  else
   echo "[$APPNAME][$(date)] Found an existing DB in $VRS_CONFIG_DIR, not touching anything!"
