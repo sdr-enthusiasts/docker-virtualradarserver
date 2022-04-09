@@ -41,7 +41,8 @@ echo "[$APPNAME][$(date)] Checking for Sil / OpFlags repo update..."
 if ! [[ $ACTUAL == $PROBE ]]
  then
   echo "[$APPNAME][$(date) Looks like there was an update for sil/OpFlag. Going to download the files"
-  echo $PROBE >> $ACTUALFILE
+  echo "[$APPNAME][$(date) ID: $PROBE"
+  echo $PROBE > $ACTUALFILE
   echo "[$APPNAME][$(date) Updated $ACTUALFILE to commit ID $PROBE"  
   if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" ${SILH_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
    then
@@ -59,6 +60,8 @@ if ! [[ $ACTUAL == $PROBE ]]
   fi
  else 
   echo "[$APPNAME][$(date)] Still the same commit ID, nothing was downloaded"
+  echo "[$APPNAME][$(date)] ID: $PROBE"
+  echo "[$APPNAME][$(date)] ------------------------------------------------"
 fi
 
 #download and install pre-filled DB for operator flags. As this should only happen once, no commit id check needed
@@ -107,7 +110,12 @@ if ! grep -q "<SilhouettesFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
  else
   echo "[$APPNAME][$(date)] SilhouettesFolder found, not touching config."
 fi
-
+#cleanup and exit
+[[ -f "${VRS_CONFIG_DIR}/silhouettes.zip" ]] && rm -f "${VRS_CONFIG_DIR}/silhouettes.zip"
+[[ -f "${VRS_CONFIG_DIR}/OperatorFlags.zip" ]] && rm -f "${VRS_CONFIG_DIR}/OperatorFlags.zip"
+echo "[$APPNAME][$(date)] Cleaned up downloaded files."
 echo "[$APPNAME][$(date)] Finished basic configuration."
 
 exit 0
+
+
