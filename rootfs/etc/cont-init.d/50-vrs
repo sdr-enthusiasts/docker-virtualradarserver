@@ -65,7 +65,7 @@ if ! [[ $ACTUAL == $PROBE ]]
 fi
 
 #download and install pre-filled DB for operator flags. As this should only happen once, no commit id check needed
-if [ ! -e "${VRS_CONFIG_DIR}/db/BaseStation.zip" ]
+if [ ! -e "${VRS_CONFIG_DIR}/BaseStation.zip" ]
  then
   if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/BaseStation.zip" ${FLAGSDB_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/db" "${VRS_CONFIG_DIR}/BaseStation.zip"
    then
