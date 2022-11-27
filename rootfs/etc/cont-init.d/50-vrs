@@ -12,7 +12,7 @@ VRS_CONFIG_DIR="/root/.local/share/VirtualRadar"
 #Silhouettes, OpFlags and DB
 SILH_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/Silhouettes.zip"
 FLAGS_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/OperatorFlags.zip"
-FLAGSDB_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/BaseStation.sqb"
+FLAGSDB_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/BaseStation.szip"
 MAXTIME=15
 
 #Variables for optimized downloads
@@ -43,7 +43,7 @@ if ! [[ $ACTUAL == $PROBE ]]
   echo "[$APPNAME][$(date) Looks like there was an update for sil/OpFlag. Going to download the files"
   echo "[$APPNAME][$(date) ID: $PROBE"
   echo $PROBE > $ACTUALFILE
-  echo "[$APPNAME][$(date) Updated $ACTUALFILE to commit ID $PROBE"  
+  echo "[$APPNAME][$(date) Updated $ACTUALFILE to commit ID $PROBE"
   if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" ${SILH_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
    then
     echo "[$APPNAME][$(date)] Silhouettes installed successfully"
@@ -58,16 +58,16 @@ if ! [[ $ACTUAL == $PROBE ]]
    else
     echo "[$APPNAME][$(date)] Operator Flags not installed - failure"
   fi
- else 
+ else
   echo "[$APPNAME][$(date)] Still the same commit ID, nothing was downloaded"
   echo "[$APPNAME][$(date)] ID: $PROBE"
   echo "[$APPNAME][$(date)] ------------------------------------------------"
 fi
 
 #download and install pre-filled DB for operator flags. As this should only happen once, no commit id check needed
-if [ ! -e "${VRS_CONFIG_DIR}/db/BaseStation.sqb" ]
+if [ ! -e "${VRS_CONFIG_DIR}/db/BaseStation.zip" ]
  then
-  if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/BaseStation.sqb" ${FLAGSDB_LINK}
+  if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/BaseStation.zip" ${FLAGSDB_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/db" "${VRS_CONFIG_DIR}/BaseStation.zip"
    then
     echo "[$APPNAME][$(date)] Database for Operator Flags installed successfully"
    else
@@ -117,5 +117,3 @@ echo "[$APPNAME][$(date)] Cleaned up downloaded files."
 echo "[$APPNAME][$(date)] Finished basic configuration."
 
 exit 0
-
-
