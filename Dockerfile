@@ -29,15 +29,15 @@ RUN set -x && \
 RUN set -x && \
    mkdir -p /opt/vrs && \
    pushd /opt/vrs && \
-     curl -sL -o 1.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-6-mono/VirtualRadar-3.0.0-preview-6.tar.gz && \
-     curl -sL -o 2.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-6-mono/LanguagePack-3.0.0-preview-6.tar.gz && \
-     curl -sL -o 3.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-6-mono/Plugin-WebAdmin-3.0.0-preview-6.tar.gz && \
-     curl -sL -o 4.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-6-mono/Plugin-DatabaseWriter-3.0.0-preview-6.tar.gz && \
-     curl -sL -o 5.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-6-mono/Plugin-TileServerCache-3.0.0-preview-6.tar.gz && \
-     curl -sL -o 6.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-6-mono/Plugin-CustomContent-3.0.0-preview-6.tar.gz && \
-     curl -sL -o 7.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-6-mono/Plugin-SqlServer-3.0.0-preview-6.tar.gz && \
-     curl -sL -o 8.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-6-mono/Plugin-FeedFilter-3.0.0-preview-6.tar.gz && \
-     curl -sL -o 9.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-6-mono/Plugin-DatabaseEditor-3.0.0-preview-6.tar.gz && \
+     curl -sL -o 1.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-10-mono/VirtualRadar-3.0.0-preview-10.tar.gz && \
+     curl -sL -o 2.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-10-mono/LanguagePack-3.0.0-preview-10.tar.gz && \
+     curl -sL -o 3.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-10-mono/Plugin-WebAdmin-3.0.0-preview-10.tar.gz && \
+     curl -sL -o 4.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-10-mono/Plugin-DatabaseWriter-3.0.0-preview-10.tar.gz && \
+     curl -sL -o 5.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-10-mono/Plugin-TileServerCache-3.0.0-preview-10.tar.gz && \
+     curl -sL -o 6.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-10-mono/Plugin-CustomContent-3.0.0-preview-10.tar.gz && \
+     curl -sL -o 7.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-10-mono/Plugin-SqlServer-3.0.0-preview-10.tar.gz && \
+     curl -sL -o 8.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-10-mono/Plugin-FeedFilter-3.0.0-preview-10.tar.gz && \
+     curl -sL -o 9.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-10-mono/Plugin-DatabaseEditor-3.0.0-preview-10.tar.gz && \
      for i in *.tar.gz; do tar zxf $i; done && \
    popd && \
 #
