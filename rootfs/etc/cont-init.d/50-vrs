@@ -43,7 +43,7 @@ if ! [[ $ACTUAL == $PROBE ]]
   echo "[$APPNAME][$(date) Looks like there was an update for sil/OpFlag. Going to download the files"
   echo "[$APPNAME][$(date) ID: $PROBE"
   echo $PROBE > $ACTUALFILE
-  echo "[$APPNAME][$(date) Updated $ACTUALFILE to commit ID $PROBE"
+  echo "[$APPNAME][$(date) Updated $ACTUALFILE to commit ID $PROBE"  
   if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" ${SILH_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
    then
     echo "[$APPNAME][$(date)] Silhouettes installed successfully"
@@ -58,16 +58,16 @@ if ! [[ $ACTUAL == $PROBE ]]
    else
     echo "[$APPNAME][$(date)] Operator Flags not installed - failure"
   fi
- else
+ else 
   echo "[$APPNAME][$(date)] Still the same commit ID, nothing was downloaded"
   echo "[$APPNAME][$(date)] ID: $PROBE"
   echo "[$APPNAME][$(date)] ------------------------------------------------"
 fi
 
 #download and install pre-filled DB for operator flags. As this should only happen once, no commit id check needed
-if [ ! -e "${VRS_CONFIG_DIR}/BaseStation.zip" ]
+if [ ! -e "${VRS_CONFIG_DIR}/db/BaseStation.sqb" ]
  then
-  if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/BaseStation.zip" ${FLAGSDB_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/db" "${VRS_CONFIG_DIR}/BaseStation.zip"
+  if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/BaseStation.zip" ${FLAGSDB_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/db" "${VRS_CONFIG_DIR}/OperatorFlags.zip"
    then
     echo "[$APPNAME][$(date)] Database for Operator Flags installed successfully"
    else
