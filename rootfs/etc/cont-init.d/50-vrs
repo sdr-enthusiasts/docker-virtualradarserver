@@ -85,6 +85,9 @@ cd "${VRS_DIR}"
 timeout $MAXTIME exec ${VRS_EXEC} ${VRS_CMDLINE[@]} >/dev/null 2>&1
 echo "[$APPNAME][$(date)] Virtual Radar Server has been initialized."
 
+# Replace 127.0.0.1 With ReadSB
+sed -i 's#<Address>127.0.0.1</Address>#<Address>readsb</Address>#g' "${VRS_CONFIG_DIR}/Configuration.xml"
+
 #Injecting settings for silhouettes, OpFlags and DB into Configuration.xml
 if ! grep -q "<DatabaseFileName>" "${VRS_CONFIG_DIR}/Configuration.xml"
  then
