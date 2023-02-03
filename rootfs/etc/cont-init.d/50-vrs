@@ -19,11 +19,10 @@ MAXTIME=15
 WHICHREPO="https://api.github.com/repos/rikgale/VRSOperatorFlags/branches"
 WHICHBRANCH="main"
 ACTUALFILE="$VRS_CONFIG_DIR/commitid"
-ACTUAL=$(<"$ACTUALFILE")
-PROBE=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO | awk  "c&&!--c;/$WHICHBRANCH/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
-
 #if the helper file to store the commit ID isn't there, create it empty
 touch $ACTUALFILE
+ACTUAL=$(<"$ACTUALFILE")
+PROBE=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO | awk  "c&&!--c;/$WHICHBRANCH/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
 
 #debugging stuff
 #echo $ACTUAL
@@ -67,7 +66,7 @@ fi
 #download and install pre-filled DB for operator flags. As this should only happen once, no commit id check needed
 if [ ! -e "${VRS_CONFIG_DIR}/db/BaseStation.sqb" ]
  then
-  if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/BaseStation.zip" ${FLAGSDB_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/db" "${VRS_CONFIG_DIR}/OperatorFlags.zip"
+  if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/BaseStation.zip" ${FLAGSDB_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/db" "${VRS_CONFIG_DIR}/BaseStation.zip"
    then
     echo "[$APPNAME][$(date)] Database for Operator Flags installed successfully"
    else
@@ -109,13 +108,14 @@ fi
 if ! grep -q "<SilhouettesFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
  then
   sed -i "/^  <BaseStationSettings>.*/a \    \<SilhouettesFolder>/root/.local/share/VirtualRadar/silhouettes</SilhouettesFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
-  echo "[$APPNAME][$(date)] Added Silhouettes folger to Configuration.xml"
+  echo "[$APPNAME][$(date)] Added Silhouettes folder to Configuration.xml"
  else
   echo "[$APPNAME][$(date)] SilhouettesFolder found, not touching config."
 fi
 #cleanup and exit
 [[ -f "${VRS_CONFIG_DIR}/silhouettes.zip" ]] && rm -f "${VRS_CONFIG_DIR}/silhouettes.zip"
 [[ -f "${VRS_CONFIG_DIR}/OperatorFlags.zip" ]] && rm -f "${VRS_CONFIG_DIR}/OperatorFlags.zip"
+[[ -f "${VRS_CONFIG_DIR}/BaseStation.zip" ]] && rm -f "${VRS_CONFIG_DIR}/BaseStation.zip"
 echo "[$APPNAME][$(date)] Cleaned up downloaded files."
 echo "[$APPNAME][$(date)] Finished basic configuration."
 
