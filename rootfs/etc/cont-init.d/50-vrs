@@ -120,5 +120,3 @@ echo "[$APPNAME][$(date)] Cleaned up downloaded files."
 echo "[$APPNAME][$(date)] Finished basic configuration."
 
 exit 0
-
-
