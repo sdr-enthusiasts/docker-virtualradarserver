@@ -6,7 +6,7 @@ Current and latest release is on the `:dev` branch. Latest stable releases are a
 ### Requirements
 This container expects data input via network from a running instance of e.g. [readsb-protobuf](https://github.com/sdr-enthusiasts/docker-readsb-protobuf), [readsb bare-metal](https://github.com/wiedehopf/readsb) or [tar1090](https://github.com/sdr-enthusiasts/docker-tar1090) (as long it's attached to your SDR). Any other data sources _should_ work, as long tehy offer one of the [supported formats](https://www.virtualradarserver.co.uk/Documentation/WebServer/ReceiversOptions.aspx)
 
-It'll run on a Rpi, recommended is a Rpi4 with at least 2GB RAM. As VRS is a bit of ressource hog, your results will depend very much on the amount of planes your receiver picks up (or you get from some other source).
+It will run on a Raspberry Pi, recommended is a Raspberry Pi 4 with at least 2GB RAM. As VRS is a bit of ressource hog, your results will depend very much on the amount of planes your receiver picks up (or you get from some other sources).
 
 ### example docker-compose.yml
 ```
@@ -37,12 +37,12 @@ services:
 The final configuration is done via the VRS Web Admin Interface, which can be found at `http://<HOST_IP:8085/VirtualRadar/WebAdmin/Index.html`
 After startup, VRS will point to `readsb` as it's first and only receiver - which will work out of the box if the container is in the same stack as `readsb`, which is the case if you followed [this guide](https://sdr-enthusiasts.gitbook.io/ads-b/).
 
-On first startup the container downloads [some additional files](https://github.com/rikgale/VRSOperatorFlags), namely a pre-populated BaseStation.sqb, a [LocalAircraft.txt](https://github.com/rikgale/LocalAircraft) which corrects some incorrect flagged aircrafts and some nice custom Operator Flags and Silhouettes made by [rikgale](https://github.com/rikgale) and the group effort of [the community](https://discord.com/channels/734090820684349521/797799467880677377)
-Everything ist constantly updated and help is much appreciated. Any requests can be filed through the [issues](https://github.com/rikgale/VRSOperatorFlags/issues).
+On first startup the container downloads [some additional files](https://github.com/rikgale/VRSOperatorFlags), namely a pre-populated BaseStation.sqb, a [LocalAircraft.txt](https://github.com/rikgale/LocalAircraft) which corrects some incorrectly tagged (civil a/c flagged as military a/c or visa versa only) aircrafts and some nice custom Operator Flags and Silhouettes made by [rikgale](https://github.com/rikgale) and the group effort of [the community](https://discord.com/channels/734090820684349521/797799467880677377)
+Everything is constantly updated and help is much appreciated. Any requests for operator flags / silhouettes can be filed through the [issues](https://github.com/rikgale/VRSOperatorFlags/issues).
 
 Subsequent updates of the files occur on a container-restart. Additionally, the originating repository is checked every 6 hours for updates. New files will be downloaded automatically.
 
-Requests for the LocalAircraft.txt go [here](https://github.com/rikgale/LocalAircraft/issues)
+Requests for additions to the LocalAircraft.txt go [here](https://github.com/rikgale/LocalAircraft/issues)
 
 ### Scope of supply
 The container image comes with the following preinstalled VRS V3 [plugins](https://www.virtualradarserver.co.uk/Download.aspx#panel-web-admin):
