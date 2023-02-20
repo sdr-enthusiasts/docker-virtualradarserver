@@ -1,3 +1,4 @@
+#FROM ghcr.io/sdr-enthusiasts/docker-baseimage:base
 FROM ghcr.io/sdr-enthusiasts/docker-baseimage:base
 
 RUN set -x && \
@@ -29,12 +30,17 @@ RUN set -x && \
 RUN set -x && \
    mkdir -p /opt/vrs && \
    pushd /opt/vrs && \
-     curl -sL -o 1.tar.gz https://www.virtualradarserver.co.uk/Files/VirtualRadar.tar.gz && \
-     curl -sL -o 2.tar.gz https://www.virtualradarserver.co.uk/Files/VirtualRadar.LanguagePack.tar.gz && \
-     curl -sL -o 3.tar.gz https://www.virtualradarserver.co.uk/Files/VirtualRadar.WebAdminPlugin.tar.gz && \
-     curl -sL -o 4.tar.gz https://www.virtualradarserver.co.uk/Files/VirtualRadar.DatabaseWriterPlugin.tar.gz && \
-     curl -sL -o 5.tar.gz https://www.virtualradarserver.co.uk/Files/VirtualRadar.TileServerCachePlugin.tar.gz && \
+     curl -sL -o 1.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-11-mono/VirtualRadar-3.0.0-preview-11.tar.gz && \
+     curl -sL -o 2.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-11-mono/LanguagePack-3.0.0-preview-11.tar.gz && \
+     curl -sL -o 3.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-11-mono/Plugin-WebAdmin-3.0.0-preview-11.tar.gz && \
+     curl -sL -o 4.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-11-mono/Plugin-DatabaseWriter-3.0.0-preview-11.tar.gz && \
+     curl -sL -o 5.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-11-mono/Plugin-TileServerCache-3.0.0-preview-11.tar.gz && \
+     curl -sL -o 6.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-11-mono/Plugin-CustomContent-3.0.0-preview-11.tar.gz && \
+     curl -sL -o 7.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-11-mono/Plugin-SqlServer-3.0.0-preview-11.tar.gz && \
+     curl -sL -o 8.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-11-mono/Plugin-FeedFilter-3.0.0-preview-11.tar.gz && \
+     curl -sL -o 9.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-11-mono/Plugin-DatabaseEditor-3.0.0-preview-11.tar.gz && \
      for i in *.tar.gz; do tar zxf $i; done && \
+     for i in *.tar.gz; do rm $i; done && \
    popd && \
 #
 # Add some things to make it easier to debug:

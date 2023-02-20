@@ -9,21 +9,83 @@ VRS_CMDLINE+=("-nogui")
 VRS_CMDLINE+=("-createAdmin:${VRS_ADMIN_USERNAME}")
 VRS_CMDLINE+=("-password:${VRS_ADMIN_PASSWORD}")
 VRS_CONFIG_DIR="/root/.local/share/VirtualRadar"
+#Silhouettes, OpFlags and DB
 SILH_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/Silhouettes.zip"
+FLAGS_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/OperatorFlags.zip"
+FLAGSDB_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/BaseStation.zip"
+#rikgales extras
+EXT_LOCALAC_LINK="https://raw.githubusercontent.com/rikgale/LocalAircraft/main/LocalAircraft.txt"
 MAXTIME=15
+
+#Variables for optimized downloads
+WHICHREPO="https://api.github.com/repos/rikgale/VRSOperatorFlags/branches"
+WHICHBRANCH="main"
+ACTUALFILE="$VRS_CONFIG_DIR/commitid"
+#if the helper file to store the commit ID isn't there, create it empty
+touch $ACTUALFILE
+ACTUAL=$(<"$ACTUALFILE")
+PROBE=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO | awk  "c&&!--c;/$WHICHBRANCH/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
+
+#debugging stuff
+#echo $ACTUAL
+#echo $PROBE
 
 echo "[$APPNAME][$(date)] Initializing Virtual Radar Server..."
 
 mkdir -p "${VRS_CONFIG_DIR}/flags"
 mkdir -p "${VRS_CONFIG_DIR}/silhouettes"
 mkdir -p "${VRS_CONFIG_DIR}/photos"
+mkdir -p "${VRS_CONFIG_DIR}/db"
 
-if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" ${SILH_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
-then
-  echo "[$APPNAME][$(date)] Silhouettes installed successfully"
-else
+#if there is a change in the commit ID, download and install sil/opflags
+echo "[$APPNAME][$(date)] Checking for Sil / OpFlags repo update..."
+if ! [[ $ACTUAL == $PROBE ]]
+ then
+  echo "[$APPNAME][$(date) Looks like there was an update for sil/OpFlag. Going to download the files"
+  echo "[$APPNAME][$(date) ID: $PROBE"
+  echo $PROBE > $ACTUALFILE
+  echo "[$APPNAME][$(date) Updated $ACTUALFILE to commit ID $PROBE"  
+  if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" ${SILH_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
+   then
+    echo "[$APPNAME][$(date)] Silhouettes installed successfully"
+    else
     echo "[$APPNAME][$(date)] Silhouettes not installed - failure"
+  fi
+
+#download and install operator flags
+  if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/OperatorFlags.zip" ${FLAGS_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/flags" "${VRS_CONFIG_DIR}/OperatorFlags.zip"
+   then
+    echo "[$APPNAME][$(date)] Operator Flags installed successfully"
+   else
+    echo "[$APPNAME][$(date)] Operator Flags not installed - failure"
+  fi
+ else 
+  echo "[$APPNAME][$(date)] Still the same commit ID, nothing was downloaded"
+  echo "[$APPNAME][$(date)] ID: $PROBE"
+  echo "[$APPNAME][$(date)] ------------------------------------------------"
 fi
+
+#download and install pre-filled DB for operator flags. As this should only happen once, no commit id check needed
+if [ ! -e "${VRS_CONFIG_DIR}/db/BaseStation.sqb" ]
+ then
+  if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/BaseStation.zip" ${FLAGSDB_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/db" "${VRS_CONFIG_DIR}/BaseStation.zip"
+   then
+    echo "[$APPNAME][$(date)] Database for Operator Flags installed successfully"
+   else
+    echo "[$APPNAME][$(date)] Database for Operator Flags not installed - failure"
+  fi
+ else
+  echo "[$APPNAME][$(date)] Found an existing DB in $VRS_CONFIG_DIR, not touching anything!"
+fi
+
+#We download a bit of extra input from rikgales repos and his hard work. That's done on every start of the container
+#LocalAircraft.txt needs to go where StandingData.sqb is located. That's the root of the VRS install.
+if curl -s -L -o "${VRS_CONFIG_DIR}/LocalAircraft.txt" ${EXT_LOCALAC_LINK}
+ then
+  echo "[$APPNAME][$(date)] LocalAircraft.txt installed successfully"
+ else
+  echo "[$APPNAME][$(date)] LocalAircraft.txt - failure"
+fi 
 
 # Starting VRS temporarily to create a username and password if none exist
 # If VRS has been initialized previously, it will complain and exit
@@ -33,5 +95,39 @@ cd "${VRS_DIR}"
 
 timeout $MAXTIME exec ${VRS_EXEC} ${VRS_CMDLINE[@]} >/dev/null 2>&1
 echo "[$APPNAME][$(date)] Virtual Radar Server has been initialized."
+
+# Replace 127.0.0.1 With ReadSB
+sed -i 's#<Address>127.0.0.1</Address>#<Address>readsb</Address>#g' "${VRS_CONFIG_DIR}/Configuration.xml"
+
+#Injecting settings for silhouettes, OpFlags and DB into Configuration.xml
+if ! grep -q "<DatabaseFileName>" "${VRS_CONFIG_DIR}/Configuration.xml"
+ then
+  sed -i "/^  <BaseStationSettings>.*/a \    \<DatabaseFileName>/root/.local/share/VirtualRadar/db/BaseStation.sqb</DatabaseFileName>" "${VRS_CONFIG_DIR}/Configuration.xml"
+  echo "[$APPNAME][$(date)] Added database filename to Configuration.xml"
+ else
+  echo "[$APPNAME][$(date)] DatabaseFileName found, not touching config."
+fi
+
+if ! grep -q "<OperatorFlagsFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
+ then
+  sed -i "/^  <BaseStationSettings>.*/a \    \<OperatorFlagsFolder>/root/.local/share/VirtualRadar/flags</OperatorFlagsFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
+  echo "[$APPNAME][$(date)] Added Operator Flags folder to Configuration.xml"
+ else
+  echo "[$APPNAME][$(date)] OperatorFlagsFolder found, not touching config."
+fi
+
+if ! grep -q "<SilhouettesFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
+ then
+  sed -i "/^  <BaseStationSettings>.*/a \    \<SilhouettesFolder>/root/.local/share/VirtualRadar/silhouettes</SilhouettesFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
+  echo "[$APPNAME][$(date)] Added Silhouettes folder to Configuration.xml"
+ else
+  echo "[$APPNAME][$(date)] SilhouettesFolder found, not touching config."
+fi
+#cleanup and exit
+[[ -f "${VRS_CONFIG_DIR}/silhouettes.zip" ]] && rm -f "${VRS_CONFIG_DIR}/silhouettes.zip"
+[[ -f "${VRS_CONFIG_DIR}/OperatorFlags.zip" ]] && rm -f "${VRS_CONFIG_DIR}/OperatorFlags.zip"
+[[ -f "${VRS_CONFIG_DIR}/BaseStation.zip" ]] && rm -f "${VRS_CONFIG_DIR}/BaseStation.zip"
+echo "[$APPNAME][$(date)] Cleaned up downloaded files."
+echo "[$APPNAME][$(date)] Finished basic configuration."
 
 exit 0
