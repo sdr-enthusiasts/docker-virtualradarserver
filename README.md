@@ -1,6 +1,8 @@
 # docker-virtualradarserver
 Dockerized version of [VirtualRadarServer](https://www.virtualradarserver.co.uk/) for Linux.
 
+Current and latest release is on the `:dev` branch. Latest stable releases are at `v3pX` branches - according to the availabe pre-releases of VRS.
+
 ### Requirements
 This container expects data input via network from a running instance of e.g. [readsb-protobuf](https://github.com/sdr-enthusiasts/docker-readsb-protobuf), [readsb bare-metal](https://github.com/wiedehopf/readsb) or [tar1090](https://github.com/sdr-enthusiasts/docker-tar1090) (as long it's attached to your SDR). Any other data sources _should_ work, as long tehy offer one of the [supported formats](https://www.virtualradarserver.co.uk/Documentation/WebServer/ReceiversOptions.aspx)
 
