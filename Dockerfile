@@ -40,6 +40,7 @@ RUN set -x && \
      curl -sL -o 8.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-11-mono/Plugin-FeedFilter-3.0.0-preview-11.tar.gz && \
      curl -sL -o 9.tar.gz https://github.com/vradarserver/vrs/releases/download/v3.0.0-preview-11-mono/Plugin-DatabaseEditor-3.0.0-preview-11.tar.gz && \
      for i in *.tar.gz; do tar zxf $i; done && \
+     for i in *.tar.gz; do rm $i; done && \
    popd && \
 #
 # Add some things to make it easier to debug:

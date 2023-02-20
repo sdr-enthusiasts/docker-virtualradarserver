@@ -10,6 +10,10 @@ SILH_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/Silhouettes.zip"
 FLAGS_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/OperatorFlags.zip"
 FLAGSDB_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/BaseStation.zip"
 
+#rickgales extras
+#LocalAircraft.txt
+EXT_LOCALAC_LINK="https://raw.githubusercontent.com/rikgale/LocalAircraft/main/LocalAircraft.txt"
+
 #Variables for optimized downloads
 WHICHREPO="https://api.github.com/repos/rikgale/VRSOperatorFlags/branches"
 WHICHBRANCH="main"
@@ -22,7 +26,7 @@ UPDATEINTERVAL=6h
 sleep 10
 
 #Who we are and what we are doing
-echo "[$APPNAME][$(date)] Autoupdate for Sil / Operator Flags started. Next run in $UPDATEINTERVAL"
+echo "[$APPNAME][$(date)] Autoupdate started. Next run in $UPDATEINTERVAL"
 
 #Let's go
 while true
@@ -32,6 +36,15 @@ do
      PROBE=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO | awk  "c&&!--c;/$WHICHBRANCH/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
      #we most probably just started the container, let's wait a bit first as we already have pretty recent files
      sleep $UPDATEINTERVAL
+     #Here are some files we're gonna update anyway, no matter of repo updates
+     echo "[$APPNAME][$(date)] Updating LocalAircraft.txt"
+      if curl -s -L -o "${VRS_CONFIG_DIR}/LocalAircraft.txt" ${EXT_LOCALAC_LINK}
+       then
+        echo "[$APPNAME][$(date)] LocalAircraft.txt downloaded and installed successfully"
+       else
+        echo "[$APPNAME][$(date)] LocalAircraft.txt - failure"
+      fi
+
      #if there is a change in the commit ID, download and install sil/opflags
      echo "[$APPNAME][$(date)] ----------------------------------------"
      echo "[$APPNAME][$(date)] Looking for Sil / Operator Flags updates"
@@ -57,6 +70,7 @@ do
       else
        echo "[$APPNAME][$(date)] No changes found, nothing was downloaded."
      fi
+
      #cleaning up downloaded files
      [[ -f "${VRS_CONFIG_DIR}/silhouettes.zip" ]] && rm -f "${VRS_CONFIG_DIR}/silhouettes.zip"
      [[ -f "${VRS_CONFIG_DIR}/OperatorFlags.zip" ]] && rm -f "${VRS_CONFIG_DIR}/OperatorFlags.zip"

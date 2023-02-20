@@ -13,6 +13,8 @@ VRS_CONFIG_DIR="/root/.local/share/VirtualRadar"
 SILH_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/Silhouettes.zip"
 FLAGS_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/OperatorFlags.zip"
 FLAGSDB_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/BaseStation.zip"
+#rikgales extras
+EXT_LOCALAC_LINK="https://raw.githubusercontent.com/rikgale/LocalAircraft/main/LocalAircraft.txt"
 MAXTIME=15
 
 #Variables for optimized downloads
@@ -75,6 +77,15 @@ if [ ! -e "${VRS_CONFIG_DIR}/db/BaseStation.sqb" ]
  else
   echo "[$APPNAME][$(date)] Found an existing DB in $VRS_CONFIG_DIR, not touching anything!"
 fi
+
+#We download a bit of extra input from rikgales repos and his hard work. That's done on every start of the container
+#LocalAircraft.txt needs to go where StandingData.sqb is located. That's the root of the VRS install.
+if curl -s -L -o "${VRS_CONFIG_DIR}/LocalAircraft.txt" ${EXT_LOCALAC_LINK}
+ then
+  echo "[$APPNAME][$(date)] LocalAircraft.txt installed successfully"
+ else
+  echo "[$APPNAME][$(date)] LocalAircraft.txt - failure"
+fi 
 
 # Starting VRS temporarily to create a username and password if none exist
 # If VRS has been initialized previously, it will complain and exit
