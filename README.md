@@ -59,3 +59,19 @@ The container image comes with the following preinstalled VRS V3 [plugins](https
 
 ### Something does not work, is broken or missing
 Well, that happens. Drop by our [Discord](https://discord.com/channels/734090820684349521/797799467880677377) and we'll see what we can do.
+
+###Disclaimer and acknowledgements###
+
+**IMPORTANT NOTICE:** Additional map overlays used in this container may contain aviation airscape, weather, navigational aids, airfield information, etc. All of these are purely for entertainment / hobby use and MUST NEVER be relied upon to any extent for real world aviation / flying. You should always use the latest legal airspace charts and weather information as published by official sources. This is not an official source. By using this code you agree to make users of your webpage aware of this, and agree that the publisher is not responsible for any loss or damage resulting from the use of this code. The airspace charts, navigational aids,aerodrome information, weather, etc will not be 100% complete or accurate and will contain errors.
+
+**THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.**
+
+SDR Enthusiasts are very grateful for the following resources which have been used in this code:
+
+ - Virtual Radar Server (Andrew Whewell) [VRS on GitHub](https://github.com/vradarserver/vrs) / [VRS Website](http://www.virtualradarserver.co.uk/)
+ - Database snapshot original data provide from PlaneBase, VRS Standing Data and various user additions.
+ - Docker container base image, oringal container and other docker related fun-times ([SDR Enthusiasts](https://github.com/sdr-enthusiasts))
+ - [Sideviews](https://github.com/rikgale/VRSOperatorFlags) and [Silhoeuttes](https://github.com/rikgale/VRSOperatorFlags) (rikgale)
+ - [Additonal Aircraft Markers](https://github.com/rikgale/VRSCustomMarkers) (rikgale)
+ - [Map overlays](https://github.com/rikgale/VRSCustomLayers) (rikgale)
+ - [LocalAircraft.txt](https://github.com/rikgale/LocalAircraft) - (rikgale / Jonboy1081)
