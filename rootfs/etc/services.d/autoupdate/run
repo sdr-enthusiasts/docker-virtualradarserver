@@ -4,6 +4,7 @@
 APPNAME="$(hostname)/autoupdate"
 VRS_DIR="/opt/vrs"
 VRS_CONFIG_DIR="/root/.local/share/VirtualRadar"
+VRS_EXTENSION_DIR="/root/.local/share/VirtualRadar/CustomContent/CustomInjectedFiles"
 
 #Silhouettes, OpFlags and DB
 SILH_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/Silhouettes.zip"
@@ -13,11 +14,17 @@ FLAGSDB_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/BaseStation.z
 #rickgales extras
 #LocalAircraft.txt
 EXT_LOCALAC_LINK="https://raw.githubusercontent.com/rikgale/LocalAircraft/main/LocalAircraft.txt"
+#ExtraMarkers
+EXT_MARKERS_LINK="https://raw.githubusercontent.com/rikgale/VRSCustomMarkers/main/MyMarkers1.html"
 
 #Variables for optimized downloads
 WHICHREPO="https://api.github.com/repos/rikgale/VRSOperatorFlags/branches"
 WHICHBRANCH="main"
 ACTUALFILE="$VRS_CONFIG_DIR/commitid"
+#the same for CustomMarkers
+WHICHREPO_CM="https://api.github.com/repos/rikgale/VRSCustomMarkers/branches"
+WHICHBRANCH_CM="main"
+ACTUALFILE_CM="$VRS_CONFIG_DIR/commitid_cm"
 
 #Interval of updatecheck
 UPDATEINTERVAL=6h
@@ -34,6 +41,9 @@ do
      #we need these two in the loop, otherwise they will never get updated
      ACTUAL=$(<"$ACTUALFILE")
      PROBE=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO | awk  "c&&!--c;/$WHICHBRANCH/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
+     #The same check as above but for the custom markers
+     ACTUAL_CM=$(<"$ACTUALFILE_CM")
+     PROBE_CM=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO_CM | awk  "c&&!--c;/$WHICHBRANCH_CM/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
      #we most probably just started the container, let's wait a bit first as we already have pretty recent files
      sleep $UPDATEINTERVAL
      #Here are some files we're gonna update anyway, no matter of repo updates
@@ -70,11 +80,25 @@ do
       else
        echo "[$APPNAME][$(date)] No changes found, nothing was downloaded."
      fi
-
+     #looking for updates of the custom markers html file
+     echo "[$APPNAME][$(date)] ----------------------------------------"
+     echo "[$APPNAME][$(date)] Looking for updates for the custom markers file"
+     if ! [[ $ACTUAL_CM == $PROBE_CM ]]
+       then
+        echo "[$APPNAME][$(date)] Looks like there was an update for the custom markers. Going to download the file"
+        echo $PROBE_CM > $ACTUALFILE_CM
+        echo "[$APPNAME][$(date)] Updated $ACTUALFILE_CM to commit ID $PROBE_CM"
+        if curl -s -L -o "${VRS_EXTENSION_DIR}/MyMarkers1.html" ${EXT_MARKERS_LINK}
+         then
+          echo "[$APPNAME][$(date)] New custom marker file installed successfully"
+          else
+          echo "[$APPNAME][$(date)] New custom marker file not installed - failure"
+        fi
+     fi      
      #cleaning up downloaded files
      [[ -f "${VRS_CONFIG_DIR}/silhouettes.zip" ]] && rm -f "${VRS_CONFIG_DIR}/silhouettes.zip"
      [[ -f "${VRS_CONFIG_DIR}/OperatorFlags.zip" ]] && rm -f "${VRS_CONFIG_DIR}/OperatorFlags.zip"
-     echo "[$APPNAME][$(date)] Cleaned up downloaded files."
+     echo "[$APPNAME][$(date)] Cleaned up downloaded files - if any"
      echo "[$APPNAME][$(date)] Finished. Next run in $UPDATEINTERVAL"
      echo "[$APPNAME][$(date)] ----------------------------------------"
 done
