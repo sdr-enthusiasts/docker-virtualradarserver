@@ -9,7 +9,7 @@ VRS_EXTENSION_DIR="/root/.local/share/VirtualRadar/CustomContent/CustomInjectedF
 #Silhouettes, OpFlags and DB
 SILH_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/Silhouettes.zip"
 FLAGS_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/OperatorFlags.zip"
-FLAGSDB_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/BaseStation.zip"
+FLAGSDB_LINK="https://github.com/rikgale/VRSData/raw/main/BaseStation.zip"
 
 #rickgales extras
 #LocalAircraft.txt
@@ -33,7 +33,7 @@ UPDATEINTERVAL=6h
 sleep 10
 
 #Who we are and what we are doing
-echo "[$APPNAME][$(date)] Autoupdate started. Next run in $UPDATEINTERVAL"
+echo "[$APPNAME][$(date)] Autoupdate service started. Next run in $UPDATEINTERVAL"
 
 #Let's go
 while true
@@ -63,7 +63,7 @@ do
        echo "[$APPNAME][$(date)] Looks like there was an update for Sil /Operator Flags. Going to download the files"
        echo $PROBE > $ACTUALFILE
        echo "[$APPNAME][$(date)] Updated $ACTUALFILE to commit ID $PROBE"
-       if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" ${SILH_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
+       if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" ${SILH_LINK} && unzip -u -qq -o -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
         then
          echo "[$APPNAME][$(date)] Silhouettes installed successfully"
          else
@@ -71,7 +71,7 @@ do
        fi
 
      #download and install operator flags
-       if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/OperatorFlags.zip" ${FLAGS_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/flags" "${VRS_CONFIG_DIR}/OperatorFlags.zip"
+       if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/OperatorFlags.zip" ${FLAGS_LINK} && unzip -u -qq -o -d "${VRS_CONFIG_DIR}/flags" "${VRS_CONFIG_DIR}/OperatorFlags.zip"
         then
          echo "[$APPNAME][$(date)] Operator Flags installed successfully"
         else
@@ -94,6 +94,8 @@ do
           else
           echo "[$APPNAME][$(date)] New custom marker file not installed - failure"
         fi
+      else  
+       echo "[$APPNAME][$(date)] No changes found, nothing was downloaded."
      fi      
      #cleaning up downloaded files
      [[ -f "${VRS_CONFIG_DIR}/silhouettes.zip" ]] && rm -f "${VRS_CONFIG_DIR}/silhouettes.zip"
