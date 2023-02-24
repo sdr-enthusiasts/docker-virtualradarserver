@@ -45,7 +45,7 @@ do
      ACTUAL_CM=$(<"$ACTUALFILE_CM")
      PROBE_CM=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO_CM | awk  "c&&!--c;/$WHICHBRANCH_CM/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
      #we most probably just started the container, let's wait a bit first as we already have pretty recent files
-     sleep $UPDATEINTERVAL
+#     sleep $UPDATEINTERVAL
      #Here are some files we're gonna update anyway, no matter of repo updates
      echo "[$APPNAME][$(date)] Updating LocalAircraft.txt"
       if curl -s -L -o "${VRS_CONFIG_DIR}/LocalAircraft.txt" ${EXT_LOCALAC_LINK}
@@ -103,4 +103,6 @@ do
      echo "[$APPNAME][$(date)] Cleaned up downloaded files - if any"
      echo "[$APPNAME][$(date)] Finished. Next run in $UPDATEINTERVAL"
      echo "[$APPNAME][$(date)] ----------------------------------------"
+#sleep a bit until the next run
+  sleep $UPDATEINTERVAL
 done
