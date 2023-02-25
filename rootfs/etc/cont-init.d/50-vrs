@@ -17,13 +17,14 @@ MAXTIME=15
 
 ACTUALFILE="$VRS_CONFIG_DIR/commitid"
 ACTUALFILE_CM="$VRS_CONFIG_DIR/commitid_cm"
+ACTUALFILE_SQB="$VRS_CONFIG_DIR/commitid_sqb"
 
 #if the helper file to store the commit ID isn't there, create it empty
 touch $ACTUALFILE
-echo init > $ACTUALFILE
 #and the same for the custom markers
 touch $ACTUALFILE_CM
-echo init > $ACTUALFILE_CM
+#for the database
+touch $ACTUALFILE_SQB
 
 #debugging stuff
 #echo $ACTUAL
@@ -39,15 +40,15 @@ mkdir -p "${VRS_CONFIG_DIR}/CustomContent/CustomInjectedFiles"
 
 #download and install pre-filled DB for operator flags. As this should only happen once, no commit id check needed
 if [ ! -e "${VRS_CONFIG_DIR}/db/BaseStation.sqb" ]
- then
-  if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/BaseStation.zip" ${FLAGSDB_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/db" "${VRS_CONFIG_DIR}/BaseStation.zip"
-   then
-    echo "[$APPNAME][$(date)] Database for Operator Flags installed successfully"
-   else
-    echo "[$APPNAME][$(date)] Database for Operator Flags not installed - failure"
-  fi
- else
-  echo "[$APPNAME][$(date)] Found an existing DB in $VRS_CONFIG_DIR, not touching anything!"
+  then
+    if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/BaseStation.zip" ${FLAGSDB_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/db" "${VRS_CONFIG_DIR}/BaseStation.zip"
+      then
+        echo "[$APPNAME][$(date)] Database for Operator Flags installed successfully"
+      else
+        echo "[$APPNAME][$(date)] Database for Operator Flags not installed - failure"
+    fi
+  else
+    echo "[$APPNAME][$(date)] Found an existing DB in $VRS_CONFIG_DIR, not touching anything!"
 fi
 
 # Starting VRS temporarily to create a username and password if none exist
@@ -69,28 +70,28 @@ sed -i 's#<Address>127.0.0.1</Address>#<Address>readsb</Address>#g' "${VRS_CONFI
 
 #Injecting settings for silhouettes, OpFlags and DB into Configuration.xml
 if ! grep -q "<DatabaseFileName>" "${VRS_CONFIG_DIR}/Configuration.xml"
- then
-  sed -i "/^  <BaseStationSettings>.*/a \    \<DatabaseFileName>/root/.local/share/VirtualRadar/db/BaseStation.sqb</DatabaseFileName>" "${VRS_CONFIG_DIR}/Configuration.xml"
-  echo "[$APPNAME][$(date)] Added database filename to Configuration.xml"
- else
-  echo "[$APPNAME][$(date)] DatabaseFileName found, not touching config."
+  then
+    sed -i "/^  <BaseStationSettings>.*/a \    \<DatabaseFileName>/root/.local/share/VirtualRadar/db/BaseStation.sqb</DatabaseFileName>" "${VRS_CONFIG_DIR}/Configuration.xml"
+    echo "[$APPNAME][$(date)] Added database filename to Configuration.xml"
+  else
+    echo "[$APPNAME][$(date)] DatabaseFileName found, not touching config."
 fi
 
 if ! grep -q "<OperatorFlagsFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
- then
-  sed -i "/^  <BaseStationSettings>.*/a \    \<OperatorFlagsFolder>/root/.local/share/VirtualRadar/flags</OperatorFlagsFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
-  echo "[$APPNAME][$(date)] Added Operator Flags folder to Configuration.xml"
- else
-  echo "[$APPNAME][$(date)] OperatorFlagsFolder found, not touching config."
+  then
+    sed -i "/^  <BaseStationSettings>.*/a \    \<OperatorFlagsFolder>/root/.local/share/VirtualRadar/flags</OperatorFlagsFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
+    echo "[$APPNAME][$(date)] Added Operator Flags folder to Configuration.xml"
+  else
+    echo "[$APPNAME][$(date)] OperatorFlagsFolder found, not touching config."
 fi
 
 if ! grep -q "<SilhouettesFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
- then
-  sed -i "/^  <BaseStationSettings>.*/a \    \<SilhouettesFolder>/root/.local/share/VirtualRadar/silhouettes</SilhouettesFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
-  echo "[$APPNAME][$(date)] Added Silhouettes folder to Configuration.xml"
- else
-  echo "[$APPNAME][$(date)] SilhouettesFolder found, not touching config."
-fi
+  then
+    sed -i "/^  <BaseStationSettings>.*/a \    \<SilhouettesFolder>/root/.local/share/VirtualRadar/silhouettes</SilhouettesFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
+    echo "[$APPNAME][$(date)] Added Silhouettes folder to Configuration.xml"
+  else
+    echo "[$APPNAME][$(date)] SilhouettesFolder found, not touching config."
+    fi
 #cleanup and exit
 [[ -f "${VRS_CONFIG_DIR}/BaseStation.zip" ]] && rm -f "${VRS_CONFIG_DIR}/BaseStation.zip"
 echo "[$APPNAME][$(date)] Cleaned up downloaded files."

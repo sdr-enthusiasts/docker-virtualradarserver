@@ -27,9 +27,16 @@ ACTUALFILE="$VRS_CONFIG_DIR/commitid"
 WHICHREPO_CM="https://api.github.com/repos/rikgale/VRSCustomMarkers/branches"
 WHICHBRANCH_CM="main"
 ACTUALFILE_CM="$VRS_CONFIG_DIR/commitid_cm"
+#and the sqb
+WHICHREPO_SQB="https://api.github.com/repos/rikgale/VRSData/branches"
+WHICHBRANCH_SQB="main"
+ACTUALFILE_SQB="$VRS_CONFIG_DIR/commitid_sqb"
 
 #Interval of updatecheck
 UPDATEINTERVAL=6h
+
+#Failsetting for the SQB Backup
+SQBFAIL=0
 
 #Give VRS a bit of time to start
 sleep 10
@@ -40,90 +47,107 @@ echo "[$APPNAME][$(date)] Autoupdate service started. Next run in $UPDATEINTERVA
 #Let's go
 while true
 do
-     #we need these two in the loop, otherwise they will never get updated
-     ACTUAL=$(<"$ACTUALFILE")
-     PROBE=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO | awk  "c&&!--c;/$WHICHBRANCH/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
-     #The same check as above but for the custom markers
-     ACTUAL_CM=$(<"$ACTUALFILE_CM")
-     PROBE_CM=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO_CM | awk  "c&&!--c;/$WHICHBRANCH_CM/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
-     #we most probably just started the container, let's wait a bit first as we already have pretty recent files
-#     sleep $UPDATEINTERVAL
-     #Here are some files we're gonna update anyway, no matter of repo updates
-     echo "[$APPNAME][$(date)] Updating LocalAircraft.txt"
+      #we need these two in the loop, otherwise they will never get updated
+      ACTUAL=$(<"$ACTUALFILE")
+      PROBE=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO | awk  "c&&!--c;/$WHICHBRANCH/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
+      #The same check as above but for the custom markers
+      ACTUAL_CM=$(<"$ACTUALFILE_CM")
+      PROBE_CM=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO_CM | awk  "c&&!--c;/$WHICHBRANCH_CM/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
+      #and the database
+      ACTUAL_SQB=$(<"$ACTUALFILE_SQB")
+      PROBE_SQB=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO_SQB | awk  "c&&!--c;/$WHICHBRANCH_SQB/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
+      #Here are some files we're gonna update anyway, no matter of repo updates
+      echo "[$APPNAME][$(date)] Updating LocalAircraft.txt"
       if curl -s -L -o "${VRS_CONFIG_DIR}/LocalAircraft.txt" ${EXT_LOCALAC_LINK}
-       then
-        echo "[$APPNAME][$(date)] LocalAircraft.txt downloaded and installed successfully"
-       else
-        echo "[$APPNAME][$(date)] LocalAircraft.txt - failure"
+        then
+          echo "[$APPNAME][$(date)] LocalAircraft.txt downloaded and installed successfully"
+        else
+          echo "[$APPNAME][$(date)] LocalAircraft.txt - failure"
       fi
 
-     #if there is a change in the commit ID, download and install sil/opflags
-     echo "[$APPNAME][$(date)] ----------------------------------------"
-     echo "[$APPNAME][$(date)] Looking for Sil / Operator Flags updates"
-     if ! [[ $ACTUAL == $PROBE ]]
-      then
-       echo "[$APPNAME][$(date)] Looks like there was an update for Sil /Operator Flags. Going to download the files"
-       echo $PROBE > $ACTUALFILE
-       echo "[$APPNAME][$(date)] Updated $ACTUALFILE to commit ID $PROBE"
-       if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" ${SILH_LINK} && unzip -u -qq -o -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
+      #if there is a change in the commit ID, download and install sil/opflags
+      echo "[$APPNAME][$(date)] ----------------------------------------"
+      echo "[$APPNAME][$(date)] Looking for Sil / Operator Flags updates"
+      if ! [[ $ACTUAL == $PROBE ]]
         then
-         echo "[$APPNAME][$(date)] Silhouettes installed successfully"
-         else
-         echo "[$APPNAME][$(date)] Silhouettes not installed - failure"
-       fi
+          echo "[$APPNAME][$(date)] Looks like there was an update for Sil /Operator Flags. Going to download the files"
+          echo $PROBE > $ACTUALFILE
+          echo "[$APPNAME][$(date)] Updated $ACTUALFILE to commit ID $PROBE"
+          if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" ${SILH_LINK} && unzip -u -qq -o -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
+            then
+              echo "[$APPNAME][$(date)] Silhouettes installed successfully"
+            else
+              echo "[$APPNAME][$(date)] Silhouettes not installed - failure"
+          fi
 
-     #download and install operator flags
-       if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/OperatorFlags.zip" ${FLAGS_LINK} && unzip -u -qq -o -d "${VRS_CONFIG_DIR}/flags" "${VRS_CONFIG_DIR}/OperatorFlags.zip"
+          #download and install operator flags
+          if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/OperatorFlags.zip" ${FLAGS_LINK} && unzip -u -qq -o -d "${VRS_CONFIG_DIR}/flags" "${VRS_CONFIG_DIR}/OperatorFlags.zip"
+            then
+              echo "[$APPNAME][$(date)] Operator Flags installed successfully"
+            else
+              echo "[$APPNAME][$(date)] Operator Flags not installed - failure"
+          fi
+            else
+              echo "[$APPNAME][$(date)] No changes found, nothing was downloaded."
+      fi
+      #looking for updates of the custom markers html file
+      echo "[$APPNAME][$(date)] ----------------------------------------"
+      echo "[$APPNAME][$(date)] Looking for updates for the custom markers file"
+      if ! [[ $ACTUAL_CM == $PROBE_CM ]]
         then
-         echo "[$APPNAME][$(date)] Operator Flags installed successfully"
-        else
-         echo "[$APPNAME][$(date)] Operator Flags not installed - failure"
-       fi
-      else
-       echo "[$APPNAME][$(date)] No changes found, nothing was downloaded."
-     fi
-     #looking for updates of the custom markers html file
-     echo "[$APPNAME][$(date)] ----------------------------------------"
-     echo "[$APPNAME][$(date)] Looking for updates for the custom markers file"
-     if ! [[ $ACTUAL_CM == $PROBE_CM ]]
-       then
-        echo "[$APPNAME][$(date)] Looks like there was an update for the custom markers. Going to download the file"
-        echo $PROBE_CM > $ACTUALFILE_CM
-        echo "[$APPNAME][$(date)] Updated $ACTUALFILE_CM to commit ID $PROBE_CM"
-        if curl -s -L -o "${VRS_EXTENSION_DIR}/MyMarkers1.html" ${EXT_MARKERS_LINK}
-         then
-          echo "[$APPNAME][$(date)] New custom marker file installed successfully"
-          else
-          echo "[$APPNAME][$(date)] New custom marker file not installed - failure"
-        fi
-      else  
-       echo "[$APPNAME][$(date)] No changes found, nothing was downloaded."
-     fi      
-     
-     #BaseSation SQB Update
-      echo "[$APPNAME][$(date)] Donwloading latest FullAircraft update file and uncompress it"
-        if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" ${FULLAIRCRAFT_LINK} && tar xfz "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" -C "${VRS_CONFIG_DIR}/db/"
+          echo "[$APPNAME][$(date)] Looks like there was an update for the custom markers. Going to download the file"
+          echo $PROBE_CM > $ACTUALFILE_CM
+          echo "[$APPNAME][$(date)] Updated $ACTUALFILE_CM to commit ID $PROBE_CM"
+          if curl -s -L -o "${VRS_EXTENSION_DIR}/MyMarkers1.html" ${EXT_MARKERS_LINK}
+            then
+              echo "[$APPNAME][$(date)] New custom marker file installed successfully"
+            else
+              echo "[$APPNAME][$(date)] New custom marker file not installed - failure"
+          fi
+        else  
+          echo "[$APPNAME][$(date)] No changes found, nothing was downloaded."
+      fi      
+      #BaseSation SQB Update
+      if [[ -n "${VRS_DB_UPDATE_POLICY_FULLAUTO}" ]]
+      then
+        echo "[$APPNAME][$(date)] ----------------------------------------"
+        echo "[$APPNAME][$(date)] Looking for updates for the BaseStation.sqb"
+        if ! [[ $ACTUAL_SQB == $PROBE_SQB ]]
           then
-            echo "[$APPNAME][$(date)] Donwload of the latest FullAircraft update file - OK"
-          else
-            echo "[$APPNAME][$(date)] Donwload of the latest FullAircraft update file - FAIL!"
-        fi
-      #shutting down VRS for the DB backup and update
-      echo "[$APPNAME][$(date)] Shutting down VRS temporarily as we are going to deal with the database."
-      s6-svc -wD -d -T 5000 /run/s6/services/vrs/
-      echo "sleeping for 10"
-      sleep 10 #for debugging
-      echo "[$APPNAME][$(date)] Create a backup of the BaseStation.sqb"
-        if gzip -f -k ${VRS_CONFIG_DIR}/db/BaseStation.sqb
-          then
-            echo "[$APPNAME][$(date)] Backup of BaseStation.sqb - OK"
-          else
-            echo "[$APPNAME][$(date)] Backup of BaseStation.sqb - FAIL!"
-        fi
-      echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - this might take a few moments"
-        if sqlite3 ${VRS_CONFIG_DIR}/db/BaseStation.sqb <<EOF
+            echo "[$APPNAME][$(date)] Looks like there was an update for the database. Going to download the updatefile"
+            echo $PROBE_SQB > $ACTUALFILE_SQB
+            echo "[$APPNAME][$(date)] Updated $ACTUALFILE_SQB to commit ID $PROBE_SQB"
+            echo "[$APPNAME][$(date)] Donwloading latest FullAircraft update file and uncompress it"
+            if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" ${FULLAIRCRAFT_LINK} && FULLAIRCRAFT_NAME=$(tar xvfz "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" -C "${VRS_CONFIG_DIR}/db/")
+              then
+                echo "[$APPNAME][$(date)] Donwload of the latest FullAircraft update file - OK"
+                echo "[$APPNAME][$(date)] Filename extrated from the tar.gz: ${FULLAIRCRAFT_NAME}"
+            else
+                echo "[$APPNAME][$(date)] Donwload of the latest FullAircraft update file - FAIL!"
+                SQBFAIL=1
+            fi
+          #shutting down VRS for the DB backup and update
+          echo "[$APPNAME][$(date)] Shutting down VRS temporarily as we are going to deal with the database."
+          s6-svc -wD -d -T 5000 /run/s6/services/vrs/
+          echo "[$APPNAME][$(date)] It's dead, Jim"
+          sleep 5
+          echo "[$APPNAME][$(date)] Create a backup of the BaseStation.sqb"
+          if gzip -f -k ${VRS_CONFIG_DIR}/db/BaseStation.sqb
+            then
+              echo "[$APPNAME][$(date)] Backup of BaseStation.sqb - OK"
+            else
+              echo "[$APPNAME][$(date)] Backup of BaseStation.sqb - FAIL!"
+              SQBFAIL=1 
+          fi
+          #Starting the merge process - but check for any fails first. If one is found, we'll nope out here
+          if ! [[ $SQBFAIL == 0 ]]
+            then
+              echo "[$APPNAME][$(date)] Something went wrong with the Updatefile or the backup. Merge will be skipped"
+            else
+              echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - this might take a few moments"
+            if sqlite3 ${VRS_CONFIG_DIR}/db/BaseStation.sqb <<EOF
 .mode csv
-.import ${VRS_CONFIG_DIR}/db/FullAircraft.csv FullAircraft
+.import ${VRS_CONFIG_DIR}/db/${FULLAIRCRAFT_NAME} FullAircraft
 CREATE UNIQUE INDEX "Code" ON "FullAircraft" ("ModeS"   ASC);
 UPDATE Aircraft SET (FirstCreated, LastModified, Registration, Status, Manufacturer, ICAOTypeCode, Type, SerialNo, RegisteredOwners, UserNotes, Interested, UserString1, UserString4, UserString5, UserInt1, UserInt3, OperatorFlagCode) = (SELECT FullAircraft.FirstCreated, FullAircraft.LastModified, FullAircraft.Registration,  FullAircraft.Status, FullAircraft.Manufacturer, FullAircraft.ICAOTypeCode, FullAircraft.Type, FullAircraft.SerialNo, FullAircraft.RegisteredOwners, FullAircraft.UserNotes, FullAircraft.Interested, FullAircraft.UserString1, FullAircraft.UserString4, FullAircraft.UserString5, FullAircraft.UserInt1, FullAircraft.UserInt3, FullAircraft.OperatorFlagCode FROM FullAircraft WHERE FullAircraft.ModeS = Aircraft.ModeS) WHERE EXISTS (SELECT * FROM FullAircraft WHERE FullAircraft.ModeS = Aircraft.ModeS);
 INSERT INTO Aircraft (FirstCreated, LastModified, ModeS, ModeSCountry, Country, Registration, Status, Manufacturer, ICAOTypeCode, Type, SerialNo, RegisteredOwners, UserNotes, Interested, UserString1, UserString4, UserString5, UserInt1, UserInt3, OperatorFlagCode) SELECT FirstCreated, LastModified, ModeS, ModeSCountry, Country, Registration, Status, Manufacturer, ICAOTypeCode, Type, SerialNo, RegisteredOwners, UserNotes, Interested, UserString1, UserString4, UserString5, UserInt1, UserInt3, OperatorFlagCode FROM FullAircraft WHERE NOT EXISTS (SELECT * FROM Aircraft WHERE FullAircraft.ModeS = Aircraft.ModeS);
@@ -131,23 +155,31 @@ DROP TABLE FullAircraft;
 VACUUM;
 EOF
 #yeah, the indentation above is borked. But if not, the script will go boom. Sorry for any inconvenience caused.
-          then
-            echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - OK"
+              then
+                echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - OK"
+              else
+                echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - FAIL!"
+            fi
+          
+          fi
+          #Restarting VRS after we're finished with thte DB thingies
+          echo "[$APPNAME][$(date)] DB maintenance finished, restarting VRS"
+          s6-svc -u /run/s6/services/vrs/
           else
-            echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - FAIL!"
+            echo "[$APPNAME][$(date)] No update for the database found"
         fi
-     #Restarting VRS after we're finished with thte DB thingies
-     echo "[$APPNAME][$(date)] DB maintenance finished, restarting VRS"
-     s6-svc -u /run/s6/services/vrs/
-   
-     #cleaning up downloaded files
-     [[ -f "${VRS_CONFIG_DIR}/silhouettes.zip" ]] && rm -f "${VRS_CONFIG_DIR}/silhouettes.zip"
-     [[ -f "${VRS_CONFIG_DIR}/OperatorFlags.zip" ]] && rm -f "${VRS_CONFIG_DIR}/OperatorFlags.zip"
-     [[ -f "${VRS_CONFIG_DIR}/db/FullAircraft.csv" ]] && rm -f "${VRS_CONFIG_DIR}/db/FullAircraft.csv"
-     [[ -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" ]] && rm -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz"
-     echo "[$APPNAME][$(date)] Cleaned up downloaded files - if any"
-     echo "[$APPNAME][$(date)] Finished. Next run in $UPDATEINTERVAL"
-     echo "[$APPNAME][$(date)] ----------------------------------------"
-#sleep a bit until the next run
-  sleep $UPDATEINTERVAL
+      else
+        echo "[$APPNAME][$(date)] VRS_DB_UPDATE_POLICY_FULLAUTO not set, skipped DB updates"
+      fi
+    
+      #cleaning up downloaded files
+      [[ -f "${VRS_CONFIG_DIR}/silhouettes.zip" ]] && rm -f "${VRS_CONFIG_DIR}/silhouettes.zip"
+      [[ -f "${VRS_CONFIG_DIR}/OperatorFlags.zip" ]] && rm -f "${VRS_CONFIG_DIR}/OperatorFlags.zip"
+      [[ -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" ]] && rm -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz"
+      [[ -f "${VRS_CONFIG_DIR}/db/${FULLAIRCRAFT_NAME}" ]] && rm -f "${VRS_CONFIG_DIR}/db/${FULLAIRCRAFT_NAME}"
+      echo "[$APPNAME][$(date)] Cleaned up downloaded files - if any"
+      echo "[$APPNAME][$(date)] Finished. Next run in $UPDATEINTERVAL"
+      echo "[$APPNAME][$(date)] ----------------------------------------"
+      #sleep a bit until the next run
+      sleep $UPDATEINTERVAL
 done
