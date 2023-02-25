@@ -51,13 +51,18 @@ if [ ! -e "${VRS_CONFIG_DIR}/db/BaseStation.sqb" ]
 fi
 
 # Starting VRS temporarily to create a username and password if none exist
-# If VRS has been initialized previously, it will complain and exit
+# If VRS has been initialized previously this step will be skipped.
 # If it hasn't, a username / password and a bunch of other files will be created...
 #    ...and VRS will actually stay up and run. We will shut it down after a max runtime of $MAXTIME secs.
-cd "${VRS_DIR}"
-
-timeout $MAXTIME exec ${VRS_EXEC} ${VRS_CMDLINE[@]} >/dev/null 2>&1
-echo "[$APPNAME][$(date)] Virtual Radar Server has been initialized."
+if [ ! -e "${VRS_CONFIG_DIR}/Configuration.xml" ]
+  then
+    echo "[$APPNAME][$(date)] No Configuration.xml found, doing first run initialization."
+    cd "${VRS_DIR}"
+    timeout $MAXTIME exec ${VRS_EXEC} ${VRS_CMDLINE[@]} >/dev/null 2>&1
+    echo "[$APPNAME][$(date)] Virtual Radar Server has been initialized."
+  else
+    echo "[$APPNAME][$(date)] Configuration.xml found, skipping initialization."
+fi
 
 # Replace 127.0.0.1 With ReadSB
 sed -i 's#<Address>127.0.0.1</Address>#<Address>readsb</Address>#g' "${VRS_CONFIG_DIR}/Configuration.xml"
