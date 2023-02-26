@@ -60,7 +60,7 @@ The container image comes with the following preinstalled VRS V3 [plugins](https
 ###Environment variables
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `VRS_DB_UPDATE_POLICY_FULLAUTO` | Activates the initial download of an extended Basestation.sqb DB and keeps it up to date. Warning! This may overwrite user etnries | `unset` |
+| `VRS_DB_UPDATE_POLICY_FULLAUTO` | Activates the initial download of an extended Basestation.sqb DB and keeps it up to date. Warning! This may overwrite user entries | `unset` |
 
 ### Something does not work, is broken or missing
 Well, that happens. Drop by our [Discord](https://discord.com/channels/734090820684349521/797799467880677377) and we'll see what we can do.
