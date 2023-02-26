@@ -13,11 +13,17 @@ VRS_EXTENSION_DIR="/root/.local/share/VirtualRadar/CustomContent/CustomInjectedF
 #Silhouettes, OpFlags and DB
 FLAGSDB_LINK="https://github.com/rikgale/VRSData/raw/main/BaseStation.zip"
 
+#max runtime in seconds for VRS init
 MAXTIME=15
 
+#helper files for updatechecks
 ACTUALFILE="$VRS_CONFIG_DIR/commitid"
 ACTUALFILE_CM="$VRS_CONFIG_DIR/commitid_cm"
 ACTUALFILE_SQB="$VRS_CONFIG_DIR/commitid_sqb"
+
+#We need that for the update-after-fresh-install prevention
+WHICHREPO_SQB="https://api.github.com/repos/rikgale/VRSData/branches"
+WHICHBRANCH_SQB="main"
 
 #if the helper file to store the commit ID isn't there, create it empty
 touch $ACTUALFILE
@@ -41,9 +47,14 @@ mkdir -p "${VRS_CONFIG_DIR}/CustomContent/CustomInjectedFiles"
 #download and install pre-filled DB for operator flags. As this should only happen once, no commit id check needed
 if [ ! -e "${VRS_CONFIG_DIR}/db/BaseStation.sqb" ]
   then
+    echo "[$APPNAME][$(date)] Downloading database for Operator Flags"
     if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/BaseStation.zip" ${FLAGSDB_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/db" "${VRS_CONFIG_DIR}/BaseStation.zip"
       then
         echo "[$APPNAME][$(date)] Database for Operator Flags installed successfully"
+        #that should prevent a DB update right after a fresh download
+        PROBE_SQB=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO_SQB | awk  "c&&!--c;/$WHICHBRANCH_SQB/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
+        echo $PROBE_SQB > $ACTUALFILE_SQB
+        echo "[$APPNAME][$(date)] Updated $ACTUALFILE_SQB to commit ID $PROBE_SQB"
       else
         echo "[$APPNAME][$(date)] Database for Operator Flags not installed - failure"
     fi
