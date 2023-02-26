@@ -7,6 +7,7 @@ RUN set -x && \
     KEPT_PACKAGES=() && \
     KEPT_PACKAGES+=(psmisc) && \
     KEPT_PACKAGES+=(unzip) && \
+    KEPT_PACKAGES+=(sqlite3) && \
     KEPT_PACKAGES+=(mono-complete) && \
     # added for debugging
     KEPT_PACKAGES+=(nano netcat) && \
