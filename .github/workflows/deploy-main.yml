@@ -1,5 +1,5 @@
 ---
-name: Deploy Dev
+name: Deploy Main
 
 on:
   workflow_dispatch:
