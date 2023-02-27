@@ -1,5 +1,5 @@
 ---
-name: Deploy v3p11
+name: Deploy Dev
 
 on:
   workflow_dispatch:
@@ -28,6 +28,8 @@ env:
 #  DOCKERHUB_IMAGE: vrs
   GHCR_IMAGE: sdr-enthusiasts/vrs
   GHCR_REGISTRY: ghcr.io
+  GH_LABEL: v3p11
+  GHCR_TAG: v3p11
 
 jobs:
 
@@ -51,6 +53,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: {{ env.GH_LABEL }}
       - name: Pull hadolint/hadolint:latest Image
         run: docker pull hadolint/hadolint:latest
       - name: Run hadolint against Dockerfiles
@@ -67,6 +71,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          ref: {{ env.GH_LABEL }}
 
       # Log into ghcr (so we can push images)
       - name: Login to ghcr.io
@@ -103,5 +108,5 @@ jobs:
           no-cache: true
           platforms: linux/amd64,linux/arm/v7,linux/arm64,linux/i386
           push: true
-          tags: ghcr.io/${{ env.GHCR_IMAGE }}:v3p11
+          tags: ghcr.io/${{ env.GHCR_IMAGE }}:${{ env.GHCR_LABEL }}
           labels: ${{ steps.meta.outputs.labels }}
