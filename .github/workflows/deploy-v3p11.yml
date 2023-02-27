@@ -1,5 +1,5 @@
 ---
-name: Deploy
+name: Deploy v3p11
 
 on:
   workflow_dispatch:
