@@ -117,13 +117,13 @@ do
             echo "[$APPNAME][$(date)] Looks like there was an update for the database. Going to download the updatefile"
             echo $PROBE_SQB > $ACTUALFILE_SQB
             echo "[$APPNAME][$(date)] Updated $ACTUALFILE_SQB to commit ID $PROBE_SQB"
-            echo "[$APPNAME][$(date)] Donwloading latest FullAircraft update file and uncompress it"
+            echo "[$APPNAME][$(date)] Downloading latest FullAircraft update file and uncompress it"
             if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" ${FULLAIRCRAFT_LINK} && FULLAIRCRAFT_NAME=$(tar xvfz "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" -C "${VRS_CONFIG_DIR}/db/")
               then
-                echo "[$APPNAME][$(date)] Donwload of the latest FullAircraft update file - OK"
+                echo "[$APPNAME][$(date)] Download of the latest FullAircraft update file - OK"
                 echo "[$APPNAME][$(date)] Filename extrated from the tar.gz: ${FULLAIRCRAFT_NAME}"
             else
-                echo "[$APPNAME][$(date)] Donwload of the latest FullAircraft update file - FAIL!"
+                echo "[$APPNAME][$(date)] Download of the latest FullAircraft update file - FAIL!"
                 SQBFAIL=1
             fi
           #shutting down VRS for the DB backup and update
