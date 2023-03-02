@@ -145,11 +145,12 @@ do
               echo "[$APPNAME][$(date)] Something went wrong with the Updatefile or the backup. Merge will be skipped"
             else
               echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - this might take a few moments"
+	    #here comes the updates script which should not overwrite user inputs
             if sqlite3 ${VRS_CONFIG_DIR}/db/BaseStation.sqb <<EOF
 .mode csv
 .import ${VRS_CONFIG_DIR}/db/${FULLAIRCRAFT_NAME} FullAircraft
-CREATE UNIQUE INDEX "Code" ON "FullAircraft" ("ModeS"   ASC);
-UPDATE Aircraft SET (FirstCreated, LastModified, Registration, Status, Manufacturer, ICAOTypeCode, Type, SerialNo, RegisteredOwners, UserNotes, Interested, UserString1, UserString4, UserString5, UserInt1, UserInt3, OperatorFlagCode) = (SELECT FullAircraft.FirstCreated, FullAircraft.LastModified, FullAircraft.Registration,  FullAircraft.Status, FullAircraft.Manufacturer, FullAircraft.ICAOTypeCode, FullAircraft.Type, FullAircraft.SerialNo, FullAircraft.RegisteredOwners, FullAircraft.UserNotes, FullAircraft.Interested, FullAircraft.UserString1, FullAircraft.UserString4, FullAircraft.UserString5, FullAircraft.UserInt1, FullAircraft.UserInt3, FullAircraft.OperatorFlagCode FROM FullAircraft WHERE FullAircraft.ModeS = Aircraft.ModeS) WHERE EXISTS (SELECT * FROM FullAircraft WHERE FullAircraft.ModeS = Aircraft.ModeS);
+CREATE UNIQUE INDEX "Code" ON "FullAircraft" ("ModeS"	ASC);
+UPDATE Aircraft SET (FirstCreated, LastModified, Registration, Status, Manufacturer, ICAOTypeCode, Type, SerialNo, RegisteredOwners, UserNotes, Interested, UserString1, UserString4, UserString5, UserInt1, UserInt3, OperatorFlagCode) = (SELECT FullAircraft.FirstCreated, FullAircraft.LastModified, FullAircraft.Registration,  FullAircraft.Status, FullAircraft.Manufacturer, FullAircraft.ICAOTypeCode, FullAircraft.Type, FullAircraft.SerialNo, FullAircraft.RegisteredOwners, FullAircraft.UserNotes, FullAircraft.Interested, FullAircraft.UserString1, FullAircraft.UserString4, FullAircraft.UserString5, FullAircraft.UserInt1, FullAircraft.UserInt3, FullAircraft.OperatorFlagCode FROM FullAircraft WHERE FullAircraft.ModeS = Aircraft.ModeS) WHERE EXISTS (SELECT * FROM FullAircraft WHERE FullAircraft.ModeS = Aircraft.ModeS) AND (IFNULL(UserTag, '') = '' OR UPPER(UserTag) = 'RESET');
 INSERT INTO Aircraft (FirstCreated, LastModified, ModeS, ModeSCountry, Country, Registration, Status, Manufacturer, ICAOTypeCode, Type, SerialNo, RegisteredOwners, UserNotes, Interested, UserString1, UserString4, UserString5, UserInt1, UserInt3, OperatorFlagCode) SELECT FirstCreated, LastModified, ModeS, ModeSCountry, Country, Registration, Status, Manufacturer, ICAOTypeCode, Type, SerialNo, RegisteredOwners, UserNotes, Interested, UserString1, UserString4, UserString5, UserInt1, UserInt3, OperatorFlagCode FROM FullAircraft WHERE NOT EXISTS (SELECT * FROM Aircraft WHERE FullAircraft.ModeS = Aircraft.ModeS);
 DROP TABLE FullAircraft;
 VACUUM;
