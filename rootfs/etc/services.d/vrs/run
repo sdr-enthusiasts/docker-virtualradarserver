@@ -13,3 +13,7 @@ cd "${VRS_DIR}"
 echo "[$APPNAME][$(date)] Starting ${VRS_DIR}/${VRS_EXEC} ${VRS_CMDLINE[@]}"
 #exec ${VRS_EXEC} ${VRS_CMDLINE[@]} | stdbuf -o0 awk -v label=${APPNAME} '{print "[" label "][" strftime("%F %T%z", systime()) "] " $0}'
 exec ${VRS_EXEC} ${VRS_CMDLINE[@]}
+
+#by wiedehopf. Trying to fix the s6-svc pipe trouble
+#trap 'kill 0' TERM
+#( ${VRS_EXEC} ${VRS_CMDLINE[@]} | stdbuf -o0 awk -v label=${APPNAME} '{print "[" label "][" strftime("%F %T%z", systime()) "] " $0}' )
