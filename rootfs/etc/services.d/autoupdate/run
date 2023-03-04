@@ -33,7 +33,7 @@ WHICHBRANCH_SQB="main"
 ACTUALFILE_SQB="$VRS_CONFIG_DIR/commitid_sqb"
 
 #Interval of updatecheck
-UPDATEINTERVAL=6h
+UPDATETIME="02:20"
 
 #Failsetting for the SQB Backup
 SQBFAIL=0
@@ -42,7 +42,7 @@ SQBFAIL=0
 sleep 10
 
 #Who we are and what we are doing
-echo "[$APPNAME][$(date)] Autoupdate service started. Next run in $UPDATEINTERVAL"
+echo "[$APPNAME][$(date)] Autoupdate service started."
 
 #Let's go
 while true
@@ -179,8 +179,13 @@ EOF
       [[ -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" ]] && rm -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz"
       [[ -f "${VRS_CONFIG_DIR}/db/${FULLAIRCRAFT_NAME}" ]] && rm -f "${VRS_CONFIG_DIR}/db/${FULLAIRCRAFT_NAME}"
       echo "[$APPNAME][$(date)] Cleaned up downloaded files - if any"
-      echo "[$APPNAME][$(date)] Finished. Next run in $UPDATEINTERVAL"
+      #calculationg the next run
+      NEXTRUN_SECONDS=$((($(date -f - +%s- <<<${UPDATETIME}$' tomorrow\nnow')0)%86400))
+      TIMENOW=$(date +%s)
+      SECONDS_TO_NEXT=$((TIMENOW+NEXTRUN_SECONDS))
+      NEXTRUN_TIME=$(date --date @$SECONDS_TO_NEXT)
+      echo "[$APPNAME][$(date)] Finished. Next run in $NEXTRUN_TIME"
       echo "[$APPNAME][$(date)] ----------------------------------------"
       #sleep a bit until the next run
-      sleep $UPDATEINTERVAL
+      sleep $NEXTRUN_SECONDS
 done
