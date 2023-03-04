@@ -5,6 +5,7 @@ APPNAME="$(hostname)/autoupdate"
 VRS_DIR="/opt/vrs"
 VRS_CONFIG_DIR="/root/.local/share/VirtualRadar"
 VRS_EXTENSION_DIR="/root/.local/share/VirtualRadar/CustomContent/CustomInjectedFiles"
+export VRS_CONFIG_DIR
 
 #Silhouettes, OpFlags and DB
 SILH_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/Silhouettes.zip"
@@ -122,6 +123,7 @@ do
               then
                 echo "[$APPNAME][$(date)] Download of the latest FullAircraft update file - OK"
                 echo "[$APPNAME][$(date)] Filename extrated from the tar.gz: ${FULLAIRCRAFT_NAME}"
+                export FULLAIRCRAFT_NAME
             else
                 echo "[$APPNAME][$(date)] Download of the latest FullAircraft update file - FAIL!"
                 SQBFAIL=1
@@ -145,22 +147,16 @@ do
               echo "[$APPNAME][$(date)] Something went wrong with the Updatefile or the backup. Merge will be skipped"
             else
               echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - this might take a few moments"
-	    #here comes the updates script which should not overwrite user inputs
-            if sqlite3 ${VRS_CONFIG_DIR}/db/BaseStation.sqb <<EOF
-.mode csv
-.import ${VRS_CONFIG_DIR}/db/${FULLAIRCRAFT_NAME} FullAircraft
-CREATE UNIQUE INDEX "Code" ON "FullAircraft" ("ModeS"	ASC);
-UPDATE Aircraft SET (FirstCreated, LastModified, Registration, Status, Manufacturer, ICAOTypeCode, Type, SerialNo, RegisteredOwners, UserNotes, Interested, UserString1, UserString4, UserString5, UserInt1, UserInt3, OperatorFlagCode) = (SELECT FullAircraft.FirstCreated, FullAircraft.LastModified, FullAircraft.Registration,  FullAircraft.Status, FullAircraft.Manufacturer, FullAircraft.ICAOTypeCode, FullAircraft.Type, FullAircraft.SerialNo, FullAircraft.RegisteredOwners, FullAircraft.UserNotes, FullAircraft.Interested, FullAircraft.UserString1, FullAircraft.UserString4, FullAircraft.UserString5, FullAircraft.UserInt1, FullAircraft.UserInt3, FullAircraft.OperatorFlagCode FROM FullAircraft WHERE FullAircraft.ModeS = Aircraft.ModeS) WHERE EXISTS (SELECT * FROM FullAircraft WHERE FullAircraft.ModeS = Aircraft.ModeS) AND IFNULL(UserTag, '') = '';
-INSERT INTO Aircraft (FirstCreated, LastModified, ModeS, ModeSCountry, Country, Registration, Status, Manufacturer, ICAOTypeCode, Type, SerialNo, RegisteredOwners, UserNotes, Interested, UserString1, UserString4, UserString5, UserInt1, UserInt3, OperatorFlagCode) SELECT FirstCreated, LastModified, ModeS, ModeSCountry, Country, Registration, Status, Manufacturer, ICAOTypeCode, Type, SerialNo, RegisteredOwners, UserNotes, Interested, UserString1, UserString4, UserString5, UserInt1, UserInt3, OperatorFlagCode FROM FullAircraft WHERE NOT EXISTS (SELECT * FROM Aircraft WHERE FullAircraft.ModeS = Aircraft.ModeS);
-DROP TABLE FullAircraft;
-EOF
-#yeah, the indentation above is borked. But if not, the script will go boom. Sorry for any inconvenience caused.
+            #we want to see how long this takes...
+            if TIMEFORMAT='The update took %R seconds.'
+            time {
+            /opt/vrs/scripts/update_without_vacuum
+            }
               then
                 echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - OK"
               else
                 echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - FAIL!"
             fi
-          
           fi
           #Restarting VRS after we're finished with thte DB thingies
           echo "[$APPNAME][$(date)] DB maintenance finished, restarting VRS"
