@@ -27,6 +27,9 @@ services:
         - VRS_ADMIN_PASSWORD=your_webadmin_pass
         - VRS_CULTURE=de-DE
         #see http://msdn.microsoft.com/en-us/goglobal/bb896001.aspx for a list of supported culture names. Not all translations may be available
+        - VRS_DB_UPDATE_POLICY_FULLAUTO=yes #default unset / no
+        - VRS_DB_UPDATE_WITH_VACUUM=yes #default unset / no
+        - VRS_DB_UPDATE_BACKUP_UNCOMPRESSED=yes #default unset / compressed
     tmpfs:
         - /tmp:rw,nosuid,nodev,noexec,relatime,size=128M
     volumes:
