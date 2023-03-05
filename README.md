@@ -15,7 +15,7 @@ version: '3.8'
 services:
 
   vrs:
-    image: rhodan76/vrs:dev
+    image: ghcr.io/sdr-enthusiasts/vrs:dev
     tty: true
     container_name: vrs
     hostname: vrs
