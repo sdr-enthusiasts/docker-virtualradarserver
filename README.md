@@ -64,6 +64,7 @@ The container image comes with the following preinstalled VRS V3 [plugins](https
 | `VRS_DB_UPDATE_WITH_VACUUM` | Works only in conjunction with `VRS_DB_UPDATE_POLICY_FULLAUTO`. DB is compressed after update. The update takes longer but the sqb will be smaller.| `unset` |
 | `VRS_DB_UPDATE_BACKUP_UNCOMPRESSED` | Works only in conjunction with `VRS_DB_UPDATE_POLICY_FULLAUTO`. Prior the update a backup of the database is created. If this is set, the backup will remain uncompressed | `unset` |
 | `VRS_CULTURE` | see http://msdn.microsoft.com/en-us/goglobal/bb896001.aspx for a list of supported culture names. Not all translations may be available | `unset` means `en-GB` |
+
 If not stated otherwise, the envvars should be set to "yes" or "true" (or actually anything, as long they are set.)
 
 ### Something does not work, is broken or missing
