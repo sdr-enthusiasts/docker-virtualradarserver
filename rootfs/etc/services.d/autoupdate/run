@@ -134,12 +134,25 @@ do
           echo "[$APPNAME][$(date)] It's dead, Jim"
           sleep 5
           echo "[$APPNAME][$(date)] Create a backup of the BaseStation.sqb"
-          if gzip -f -k ${VRS_CONFIG_DIR}/db/BaseStation.sqb
+          if [[ -n "${VRS_DB_UPDATE_BACKUP_UNCOMPRESSED}" ]]
             then
-              echo "[$APPNAME][$(date)] Backup of BaseStation.sqb - OK"
+              #uncompressed backup
+              if cp -f ${VRS_CONFIG_DIR}/db/BaseStation.sqb ${VRS_CONFIG_DIR}/db/Basestation_Backup.sqb
+                then
+                  echo "[$APPNAME][$(date)] Uncompressed Backup of BaseStation.sqb - OK"
+                else
+                  echo "[$APPNAME][$(date)] Uncompressed Backup of BaseStation.sqb - FAIL!"
+                  SQBFAIL=1 
+              fi                
             else
-              echo "[$APPNAME][$(date)] Backup of BaseStation.sqb - FAIL!"
-              SQBFAIL=1 
+              #compressed backup
+              if gzip -f -k ${VRS_CONFIG_DIR}/db/BaseStation.sqb
+                then
+                  echo "[$APPNAME][$(date)] Compressed Backup of BaseStation.sqb - OK"
+                else
+                  echo "[$APPNAME][$(date)] Compressed Backup of BaseStation.sqb - FAIL!"
+                  SQBFAIL=1 
+              fi
           fi
           #Starting the merge process - but check for any fails first. If one is found, we'll nope out here
           if ! [[ $SQBFAIL == 0 ]]
@@ -150,15 +163,41 @@ do
             #we want to see how long this takes...
             if TIMEFORMAT='The update took %R seconds.'
             time {
-            /opt/vrs/scripts/update_without_vacuum
+              if [[ -n "${VRS_DB_UPDATE_WITH_VACUUM}" ]]
+                then
+                  echo "[$APPNAME][$(date)] Started script with vacuum"
+                  /opt/vrs/scripts/update_with_vacuum
+                else
+                  echo "[$APPNAME][$(date)] Started script without vacuum"
+                  /opt/vrs/scripts/update_without_vacuum
+              fi
             }
               then
                 echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - OK"
               else
                 echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - FAIL!"
+                echo "[$APPNAME][$(date)] Restoring Backup."
+                if [[ -n "${VRS_DB_UPDATE_BACKUP_UNCOMPRESSED}" ]]
+                  then
+                    #uncompressed restore
+                    if cp -f ${VRS_CONFIG_DIR}/db/Basestation_Backup.sqb ${VRS_CONFIG_DIR}/db/BaseStation.sqb
+                      then
+                        echo "[$APPNAME][$(date)] Uncompressed Restore of BaseStation.sqb - OK"
+                      else
+                        echo "[$APPNAME][$(date)] Uncompressed Restore of BaseStation.sqb - FAIL!"                  
+                    fi 
+                  else
+                    #compressed restore
+                    if gunzip -f -k ${VRS_CONFIG_DIR}/db/BaseStation.sqb.gz
+                      then
+                        echo "[$APPNAME][$(date)] Compressed Restore of BaseStation.sqb - OK"
+                      else
+                        echo "[$APPNAME][$(date)] Compressed Restore of BaseStation.sqb - FAIL!"
+                    fi
+                fi
+              fi
             fi
-          fi
-          #Restarting VRS after we're finished with thte DB thingies
+          #Restarting VRS after we're finished with the DB thingies
           echo "[$APPNAME][$(date)] DB maintenance finished, restarting VRS"
           s6-svc -u /run/s6/services/vrs/
           else
