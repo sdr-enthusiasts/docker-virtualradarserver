@@ -3,4 +3,5 @@ VRS_DB_UPDATE_POLICY
                         once            #only downloads the db on install - or if no BaseStation.sqb is found
                         full            #downloads db on install and keeps it up to date, overwriting user changes
                         none / or unset #does nothing about the db
-                        
+VRS_DB_UPDATE_WITH_VACUUM
+VRS_DB_UPDATE_BACKUP_UNCOMPRESSED
