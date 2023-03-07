@@ -50,7 +50,7 @@ Subsequent updates of the files occur on a container-restart. Additionally, the 
 
 Requests for additions to the LocalAircraft.txt go [here](https://github.com/rikgale/LocalAircraft/issues)
 
-### Scope of supply
+## Scope of supply
 
 The container image comes with the following preinstalled VRS V3 [plugins](https://www.virtualradarserver.co.uk/Download.aspx#panel-web-admin):
 
