@@ -67,7 +67,7 @@ do
       #if there is a change in the commit ID, download and install sil/opflags
       echo "[$APPNAME][$(date)] ----------------------------------------"
       echo "[$APPNAME][$(date)] Looking for Sil / Operator Flags updates"
-      if ! [[ "$ACTUAL" == "$PROBE" ]]
+      if ! [[ $ACTUAL == [[$PROBE]] ]]
         then
           echo "[$APPNAME][$(date)] Looks like there was an update for Sil /Operator Flags. Going to download the files"
           echo "$PROBE" > $ACTUALFILE
@@ -111,7 +111,7 @@ do
       then
         echo "[$APPNAME][$(date)] ----------------------------------------"
         echo "[$APPNAME][$(date)] Looking for updates for the BaseStation.sqb"
-        if ! [[ "$ACTUAL_SQB" == "$PROBE_SQB" ]]
+        if ! [[ $ACTUAL_SQB == [[$PROBE_SQB]] ]]
           then
             echo "[$APPNAME][$(date)] Looks like there was an update for the database. Going to download the updatefile"
             echo "$PROBE_SQB" > $ACTUALFILE_SQB
