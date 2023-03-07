@@ -2,7 +2,6 @@
 #shellcheck shell=bash
 
 APPNAME="$(hostname)/autoupdate"
-VRS_DIR="/opt/vrs"
 VRS_CONFIG_DIR="/root/.local/share/VirtualRadar"
 VRS_EXTENSION_DIR="/root/.local/share/VirtualRadar/CustomContent/CustomInjectedFiles"
 export VRS_CONFIG_DIR
@@ -10,7 +9,6 @@ export VRS_CONFIG_DIR
 #Silhouettes, OpFlags and DB
 SILH_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/Silhouettes.zip"
 FLAGS_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/OperatorFlags.zip"
-FLAGSDB_LINK="https://github.com/rikgale/VRSData/raw/main/BaseStation.zip"
 
 #rickgales extras
 #LocalAircraft.txt
@@ -72,7 +70,7 @@ do
       if ! [[ $ACTUAL == $PROBE ]]
         then
           echo "[$APPNAME][$(date)] Looks like there was an update for Sil /Operator Flags. Going to download the files"
-          echo $PROBE > $ACTUALFILE
+          echo "$PROBE" > $ACTUALFILE
           echo "[$APPNAME][$(date)] Updated $ACTUALFILE to commit ID $PROBE"
           if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" ${SILH_LINK} && unzip -u -qq -o -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
             then
@@ -94,7 +92,7 @@ do
       #looking for updates of the custom markers html file
       echo "[$APPNAME][$(date)] ----------------------------------------"
       echo "[$APPNAME][$(date)] Looking for updates for the custom markers file"
-      if ! [[ $ACTUAL_CM == $PROBE_CM ]]
+      if ! [[ $ACTUAL_CM == [[$PROBE_CM]] ]]
         then
           echo "[$APPNAME][$(date)] Looks like there was an update for the custom markers. Going to download the file"
           echo $PROBE_CM > $ACTUALFILE_CM
@@ -116,7 +114,7 @@ do
         if ! [[ $ACTUAL_SQB == $PROBE_SQB ]]
           then
             echo "[$APPNAME][$(date)] Looks like there was an update for the database. Going to download the updatefile"
-            echo $PROBE_SQB > $ACTUALFILE_SQB
+            echo "$PROBE_SQB" > $ACTUALFILE_SQB
             echo "[$APPNAME][$(date)] Updated $ACTUALFILE_SQB to commit ID $PROBE_SQB"
             echo "[$APPNAME][$(date)] Downloading latest FullAircraft update file and uncompress it"
             if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" ${FULLAIRCRAFT_LINK} && FULLAIRCRAFT_NAME=$(tar xvfz "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" -C "${VRS_CONFIG_DIR}/db/")
