@@ -1,5 +1,5 @@
 #!/usr/bin/with-contenv bash
-#shellcheck shell=bash
+#shellcheck shell=bash disable=SC2034
 
 APPNAME="$(hostname)/vrs-init"
 VRS_DIR="/opt/vrs"
@@ -70,7 +70,7 @@ if [ ! -e "${VRS_CONFIG_DIR}/Configuration.xml" ]
   then
     echo "[$APPNAME][$(date)] No Configuration.xml found, doing first run initialization."
     cd "${VRS_DIR}" || exit
-    timeout $MAXTIME exec ${VRS_EXEC} ${VRS_CMDLINE[@]} >/dev/null 2>&1
+    timeout "${MAXTIME}" exec "${VRS_EXEC}" "${VRS_CMDLINE[@]}" >/dev/null 2>&1
     echo "[$APPNAME][$(date)] Virtual Radar Server has been initialized."
   else
     echo "[$APPNAME][$(date)] Configuration.xml found, skipping initialization."
