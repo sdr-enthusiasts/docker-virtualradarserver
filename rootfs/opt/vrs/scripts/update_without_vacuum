@@ -1,5 +1,5 @@
 #!/bin/bash
-sqlite3 ${VRS_CONFIG_DIR}/db/BaseStation.sqb <<EOF
+sqlite3 "${VRS_CONFIG_DIR}"/db/BaseStation.sqb <<EOF
 .mode csv
 .import ${VRS_CONFIG_DIR}/db/${FULLAIRCRAFT_NAME} FullAircraft
 CREATE UNIQUE INDEX "Code" ON "FullAircraft" ("ModeS"	ASC);
