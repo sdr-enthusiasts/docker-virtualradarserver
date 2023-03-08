@@ -72,7 +72,6 @@ if [ ! -e "${VRS_CONFIG_DIR}/Configuration.xml" ]
     cd "${VRS_DIR}"
     echo "[$APPNAME][$(date)] Starting ${VRS_DIR}/${VRS_EXEC} ${VRS_CMDLINE[@]}"
     timeout $MAXTIME exec ${VRS_EXEC} "${VRS_CMDLINE[@]}"
-#    timeout $MAXTIME exec ${VRS_EXEC} ${VRS_CMDLINE}
     echo "[$APPNAME][$(date)] Virtual Radar Server has been initialized."
   else
     echo "[$APPNAME][$(date)] Configuration.xml found, skipping initialization."
