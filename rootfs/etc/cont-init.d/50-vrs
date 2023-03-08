@@ -1,5 +1,5 @@
 #!/usr/bin/with-contenv bash
-#shellcheck shell=bash disable=SC2034,SC2164
+#shellcheck shell=bash disable=SC2034,SC2164,SC2015
 
 APPNAME="$(hostname)/vrs-init"
 VRS_DIR="/opt/vrs"
