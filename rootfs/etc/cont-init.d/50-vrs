@@ -62,6 +62,20 @@ else
     echo "[$APPNAME][$(date)] Found an existing DB in $VRS_CONFIG_DIR, not touching anything!"
 fi
 
+#copy PluginsConfig into place if it's not there
+if [ ! -e "${VRS_CONFIG_DIR}/PluginsConfiguration.txt" ]
+  then
+    echo "[$APPNAME][$(date)] PluginsConfiguration.txt not found, adding template"
+      if cp -f /opt/vrs/PluginsConfiguration.txt "${VRS_CONFIG_DIR}/PluginsConfiguration.txt"
+        then
+          echo "[$APPNAME][$(date)] PluginsConfiguration.txt not found, adding template - OK"
+        else
+          echo "[$APPNAME][$(date)] PluginsConfiguration.txt not found, adding template - Failure"
+      fi  
+  else
+    echo "[$APPNAME][$(date)] PluginsConfiguration.txt found, not touching anything"
+fi
+
 # Starting VRS temporarily to create a username and password if none exist
 # If VRS has been initialized previously this step will be skipped.
 # If it hasn't, a username / password and a bunch of other files will be created...
