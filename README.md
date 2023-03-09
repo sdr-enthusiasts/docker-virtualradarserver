@@ -49,7 +49,7 @@ Everything is constantly updated and help is much appreciated. Any requests for 
 
 Subsequent updates of the files occur on a container-restart. Additionally, the originating repository is checked every 6 hours for updates. New files will be downloaded automatically.
 
-Requests for additions to the LocalAircraft.txt go [here](https://github.com/rikgale/LocalAircraft/issues)
+Requests for additions to the LocalAircraft.txt go [Here](https://github.com/rikgale/LocalAircraft/issues)
 
 ## Scope of supply
 
