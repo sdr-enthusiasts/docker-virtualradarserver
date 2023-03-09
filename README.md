@@ -32,6 +32,7 @@ services:
         - VRS_DB_UPDATE_POLICY_FULLAUTO=yes #default unset / no
         - VRS_DB_UPDATE_WITH_VACUUM=yes #default unset / no
         - VRS_DB_UPDATE_BACKUP_UNCOMPRESSED=yes #default unset / compressed
+        - VRS_ENHANCED_MARKERS=normal #default unset
     tmpfs:
         - /tmp:rw,nosuid,nodev,noexec,relatime,size=128M
     volumes:
