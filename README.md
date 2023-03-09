@@ -32,6 +32,7 @@ services:
         - VRS_DB_UPDATE_POLICY_FULLAUTO=yes #default unset / no
         - VRS_DB_UPDATE_WITH_VACUUM=yes #default unset / no
         - VRS_DB_UPDATE_BACKUP_UNCOMPRESSED=yes #default unset / compressed
+        - VRS_ENHANCED_MARKERS=normal #default unset
     tmpfs:
         - /tmp:rw,nosuid,nodev,noexec,relatime,size=128M
     volumes:
@@ -73,6 +74,7 @@ The container image comes with the following preinstalled VRS V3 [plugins](https
 | `VRS_DB_UPDATE_WITH_VACUUM` | Works only in conjunction with `VRS_DB_UPDATE_POLICY_FULLAUTO`. DB is compressed after update. The update takes longer but the sqb will be smaller.| `unset` |
 | `VRS_DB_UPDATE_BACKUP_UNCOMPRESSED` | Works only in conjunction with `VRS_DB_UPDATE_POLICY_FULLAUTO`. Prior the update a backup of the database is created. If this is set, the backup will remain uncompressed | `unset` |
 | `VRS_CULTURE` | see [here](http://msdn.microsoft.com/en-us/goglobal/bb896001.aspx) for a list of supported culture names. Not all translations may be available | `unset` means `en-GB` |
+| `VRS_ENHANCED_MARKERS` | Installs and activates VRS custom markers. `normal` is for the ADS-B set, `hfdl` is for an extra set in case you have a HFDL input and `disable` deactivates the markers [here](https://github.com/rikgale/VRSCustomMarkers) are more details about the markers. | `unset` |
 
 If not stated otherwise, the envvars should be set to "yes" or "true" (or actually anything, as long they are set.)
 
