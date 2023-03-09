@@ -1,5 +1,5 @@
 #!/bin/bash
-#
+# shellcheck disable=SC2015
 set -x
 
 [[ "$1" != "" ]] && BRANCH="$1" || BRANCH=main
@@ -16,12 +16,12 @@ IMAGE2="$BASETARGET2/$(pwd | sed -n 's|.*/docker-\(.*\)|\1|p'):$TAG"
 [[ "$IMAGE2" == "$BASETARGET2/virtualradarserver:$TAG" ]] && IMAGE2="$BASETARGET2/vrs:$TAG" || true
 
 echo "press enter to start building $IMAGE1 and $IMAGE2 from $BRANCH"
-read
+read -r
 
 starttime="$(date +%s)"
 # rebuild the container
-git checkout $BRANCH || exit 2
+git checkout "$BRANCH" || exit 2
 git pull -a
-docker buildx build --compress --push $2 --platform $ARCHS --tag $IMAGE1 .
-docker buildx build --compress --push $2 --platform $ARCHS --tag $IMAGE2 .
+docker buildx build --compress --push "$2" --platform "$ARCHS" --tag "$IMAGE1" .
+docker buildx build --compress --push "$2" --platform "$ARCHS" --tag "$IMAGE2" .
 echo "Total build time: $(( $(date +%s) - starttime )) seconds"
