@@ -15,6 +15,7 @@ FLAGS_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/OperatorFlags.z
 EXT_LOCALAC_LINK="https://raw.githubusercontent.com/rikgale/LocalAircraft/main/LocalAircraft.txt"
 #ExtraMarkers
 EXT_MARKERS_LINK="https://raw.githubusercontent.com/rikgale/VRSCustomMarkers/main/MyMarkers1.html"
+EXT_HFDLMARKERS_LINK="https://raw.githubusercontent.com/rikgale/VRSCustomMarkers/main/MyMarkers1HFDL.html"
 #sqb update link
 FULLAIRCRAFT_LINK="https://github.com/rikgale/VRSData/raw/main/FullAircraft.tar.gz"
 
@@ -31,14 +32,14 @@ WHICHREPO_SQB="https://api.github.com/repos/rikgale/VRSData/branches"
 WHICHBRANCH_SQB="main"
 ACTUALFILE_SQB="$VRS_CONFIG_DIR/commitid_sqb"
 
-#Interval of updatecheck
-UPDATETIME="02:20"
+#Tine of the updatecheck. Changed from 02:20 to 03:30 to hopefully prevent any daylightsavings mishaps
+UPDATETIME="03:20"
 
 #Failsetting for the SQB Backup
 SQBFAIL=0
 
 #Give VRS a bit of time to start
-sleep 10
+sleep 5
 
 #Who we are and what we are doing
 echo "[$APPNAME][$(date)] Autoupdate service started."
@@ -97,12 +98,25 @@ do
           echo "[$APPNAME][$(date)] Looks like there was an update for the custom markers. Going to download the file"
           echo "$PROBE_CM" > $ACTUALFILE_CM
           echo "[$APPNAME][$(date)] Updated $ACTUALFILE_CM to commit ID $PROBE_CM"
-          if curl -s -L -o "${VRS_EXTENSION_DIR}/MyMarkers1.html" ${EXT_MARKERS_LINK}
-            then
-              echo "[$APPNAME][$(date)] New custom marker file installed successfully"
+            if [[ "${VRS_ENHANCED_MARKERS}" == "normal" ]]
+              then
+                if curl -s -L -o "${VRS_EXTENSION_DIR}/MyMarkers1.html" ${EXT_MARKERS_LINK}
+                  then
+                    echo "[$APPNAME][$(date)] New ADSB custom marker file installed successfully"
+                  else
+                    echo "[$APPNAME][$(date)] New ADSB custom marker file not installed - failure"
+                fi
+            elif [[ "${VRS_ENHANCED_MARKERS}" == "HFDL" ]] || [[ "${VRS_ENHANCED_MARKERS}" == "hfdl" ]]
+              then
+                if curl -s -L -o "${VRS_EXTENSION_DIR}/MyMarkers1.html" ${EXT_HFDLMARKERS_LINK}
+                  then
+                    echo "[$APPNAME][$(date)] New HFDL custom marker file installed successfully"
+                  else
+                    echo "[$APPNAME][$(date)] New HFDL custom marker file not installed - failure"
+                fi
             else
-              echo "[$APPNAME][$(date)] New custom marker file not installed - failure"
-          fi
+              echo "[$APPNAME][$(date)] No custom markers downloaded, not set in the yaml."
+            fi
         else  
           echo "[$APPNAME][$(date)] No changes found, nothing was downloaded."
       fi      
@@ -160,7 +174,7 @@ do
               echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - this might take a few moments"
             #we want to see how long this takes...
             sleep 2
-            if TIMEFORMAT='The update took %R seconds.'
+            if TIMEFORMAT='Runtime of the update: %R seconds.'
             time {
               if [[ -n "${VRS_DB_UPDATE_WITH_VACUUM}" ]]
                 then
@@ -179,7 +193,7 @@ do
                 if [[ -n "${VRS_DB_UPDATE_BACKUP_UNCOMPRESSED}" ]]
                   then
                     #uncompressed restore
-                    #echo "[$APPNAME][$(date)] Sleeping for 5 Seconds to let VRS do it's thing with the db"
+                    echo "[$APPNAME][$(date)] Sleeping for 2 Seconds to let VRS do it's thing with the db"
                     sleep 2
                     if /opt/vrs/scripts/db_restore
                       then
@@ -189,7 +203,7 @@ do
                     fi 
                   else
                     #compressed restore
-                    #echo "[$APPNAME][$(date)] Sleeping for 5 Seconds to let VRS do it's thing with the db"
+                    echo "[$APPNAME][$(date)] Sleeping for 2 Seconds to let VRS do it's thing with the db"
                     sleep 2
                     if gunzip -f -k ${VRS_CONFIG_DIR}/db/Basestation_Backup.sqb.gz && /opt/vrs/scripts/db_restore
                       then
