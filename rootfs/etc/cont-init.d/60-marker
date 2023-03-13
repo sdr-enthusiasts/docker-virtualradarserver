@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bash
+# shellcheck shell=bash
 
 APPNAME="$(hostname)/vrs-ccmarker"
 VRS_DIR="/opt/vrs"
