@@ -44,6 +44,12 @@ sleep 5
 #Who we are and what we are doing
 echo "[$APPNAME][$(date)] Autoupdate service started."
 
+if [[ -n "${VRS_DEBUG_NOAUTOUPDATE}" ]]
+  then
+    echo "[$APPNAME][$(date)] debugging set, exited"
+    sleep infinity
+fi
+
 #Let's go
 while true
 do
@@ -215,7 +221,7 @@ do
               fi
             fi
           #Restarting VRS after we're finished with the DB thingies
-          echo "[$APPNAME][$(date)] DB maintenance finished, restarting VRS"
+          echo "[$APPNAME][$(date)] DB maintenance finished"
 #          s6-svc -u /run/s6/services/vrs/
           else
             echo "[$APPNAME][$(date)] No update for the database found"
