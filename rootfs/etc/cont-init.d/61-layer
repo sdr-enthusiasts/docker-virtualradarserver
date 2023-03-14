@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bash
 # shellcheck shell=bash
 
-APPNAME="$(hostname)/vrs-ccmarker"
+APPNAME="$(hostname)/vrs-cclayer"
 VRS_DIR="/opt/vrs"
 VRS_CONFIG_DIR="/root/.local/share/VirtualRadar"
 VRS_EXTENSION_DIR="/root/.local/share/VirtualRadar/CustomContent/CustomInjectedFiles"
