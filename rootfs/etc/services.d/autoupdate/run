@@ -233,7 +233,7 @@ do
       #cleaning up downloaded files
       [[ -f "${VRS_CONFIG_DIR}/silhouettes.zip" ]] && rm -f "${VRS_CONFIG_DIR}/silhouettes.zip"
       [[ -f "${VRS_CONFIG_DIR}/OperatorFlags.zip" ]] && rm -f "${VRS_CONFIG_DIR}/OperatorFlags.zip"
-      [[ -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" ]] && rm -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz"
+      #[[ -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" ]] && rm -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz"
       [[ -f "${VRS_CONFIG_DIR}/db/${FULLAIRCRAFT_NAME}" ]] && rm -f "${VRS_CONFIG_DIR}/db/${FULLAIRCRAFT_NAME}"
       echo "[$APPNAME][$(date)] Cleaned up downloaded files - if any"
       #calculationg the next run
