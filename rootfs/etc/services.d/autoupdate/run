@@ -151,6 +151,14 @@ do
 #          s6-svc -wD -d -T 5000 /run/s6/services/vrs/
 #          echo "[$APPNAME][$(date)] It's dead, Jim"
           sleep 1
+          #delete the prior backup
+          if [ -e "${VRS_CONFIG_DIR}/db/Basestation_Backup.sqb" ]
+            then
+              rm "${VRS_CONFIG_DIR}"/db/Basestation_Backup.sqb
+              echo "[$APPNAME][$(date)] Prior backup removed."
+            else
+              echo "[$APPNAME][$(date)] No prior backup found."
+          fi 
           echo "[$APPNAME][$(date)] Create a backup of the BaseStation.sqb"
           if [[ -n "${VRS_DB_UPDATE_BACKUP_UNCOMPRESSED}" ]]
             then
