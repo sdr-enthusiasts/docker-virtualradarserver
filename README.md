@@ -78,7 +78,7 @@ The container image comes with the following preinstalled VRS V3 [plugins](https
 | `VRS_ENHANCED_LAYERS_COUNTRY` | Installs and activates VRS enhanced layers. Takes a country code as input. Currently availble are `UK`, `DE`, `USA1` [here](https://github.com/rikgale/VRSCustomLayers) are more details, feel free to open an issue there to get your country on board. | `unset` - Unknown country codes will default to UK |
 | `VRS_ENHANCED_LAYERS_OPENWX_APIKEY` | For the enhanced weather layers to work, you need an API key. Again,  [here](https://github.com/rikgale/VRSCustomLayers) are more details, and instructions how to obtain an API key. | `unset` |
 | `VRS_ENHANCED_LAYERS_OPENAIP_APIKEY` | For the OpenAIP layers to work, you need an API key. Again,  [here](https://github.com/rikgale/VRSCustomLayers) are more details, and instructions how to obtain an API key. | `unset` |
-| `VRS_SBSHOST` | IP or hostname of a BaseStation ADS-B data feed provider | `unset` defaults to `readsb` |
+| `VRS_SBSHOST` | IP or hostname of a BaseStation ADS-B data feed provider. In general it's more easy to set up the receivers on the WebAdmin panel | `unset` defaults to `readsb` |
 | `VRS_SBSPORT` | Port the BaseStation ADS-B data feed provider | `unset` defaults to `30003` |
 
 If not stated otherwise, the envvars should be set to "yes" or "true" (or actually anything, as long they are set.)
