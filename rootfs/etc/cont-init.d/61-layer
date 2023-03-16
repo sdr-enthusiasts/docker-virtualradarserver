@@ -66,7 +66,7 @@ if [[ -n "${VRS_ENHANCED_LAYERS_COUNTRY}" ]]
               fi
            if ! [[ -n "${VRS_ENHANCED_LAYERS_OPENAIP_APIKEY}" || "${VRS_ENHANCED_LAYERS_OPENWX_APIKEY}" ]]
              then
-               echo "[$APPNAME][$(date)] VRS_ENHANCED_LAYERS_OPENAIP_APIKEY and VRS_ENHANCED_LAYERS_OPENWC_APIKEY not set. Expect those layers not to work."
+               echo "[$APPNAME][$(date)] VRS_ENHANCED_LAYERS_OPENAIP_APIKEY and VRS_ENHANCED_LAYERS_OPENWX_APIKEY not set. Expect those layers not to work."
              else
                if sed -i -e "s/##OPENWXAPIKEY##/${VRS_ENHANCED_LAYERS_OPENWX_APIKEY}/g" ${VRS_EXTENSION_DIR}/EndOfBody.html &&\
                  sed -i -e "s/##OPENAIPKEY##/${VRS_ENHANCED_LAYERS_OPENAIP_APIKEY}/g" ${VRS_EXTENSION_DIR}/EndOfBody.html
