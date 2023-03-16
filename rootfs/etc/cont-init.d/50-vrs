@@ -92,7 +92,8 @@ else
 fi
 
 # Replace 127.0.0.1 With ReadSB
-sed -i 's#<Address>127.0.0.1</Address>#<Address>readsb</Address>#g' "${VRS_CONFIG_DIR}/Configuration.xml"
+sed -i "s#<Address>127.0.0.1</Address>#<Address>${VRS_SBSHOST:-readsb}</Address>#g" "${VRS_CONFIG_DIR}/Configuration.xml"
+sed -i "s#<Port>30003</Port>#<Port>${VRS_SBSPORT:-30003}</Port>#g" "${VRS_CONFIG_DIR}/Configuration.xml"
 
 #Injecting settings for silhouettes, OpFlags and DB into Configuration.xml
 if ! grep -q "<DatabaseFileName>" "${VRS_CONFIG_DIR}/Configuration.xml"

@@ -44,6 +44,12 @@ sleep 5
 #Who we are and what we are doing
 echo "[$APPNAME][$(date)] Autoupdate service started."
 
+if [[ -n "${VRS_DEBUG_NOAUTOUPDATE}" ]]
+  then
+    echo "[$APPNAME][$(date)] debugging set, exited"
+    sleep infinity
+fi
+
 #Let's go
 while true
 do
@@ -145,6 +151,14 @@ do
 #          s6-svc -wD -d -T 5000 /run/s6/services/vrs/
 #          echo "[$APPNAME][$(date)] It's dead, Jim"
           sleep 1
+          #delete the prior backup
+          if [ -e "${VRS_CONFIG_DIR}/db/Basestation_Backup.sqb" ]
+            then
+              rm "${VRS_CONFIG_DIR}"/db/Basestation_Backup.sqb
+              echo "[$APPNAME][$(date)] Prior backup removed."
+            else
+              echo "[$APPNAME][$(date)] No prior backup found."
+          fi 
           echo "[$APPNAME][$(date)] Create a backup of the BaseStation.sqb"
           if [[ -n "${VRS_DB_UPDATE_BACKUP_UNCOMPRESSED}" ]]
             then
@@ -215,7 +229,7 @@ do
               fi
             fi
           #Restarting VRS after we're finished with the DB thingies
-          echo "[$APPNAME][$(date)] DB maintenance finished, restarting VRS"
+          echo "[$APPNAME][$(date)] DB maintenance finished"
 #          s6-svc -u /run/s6/services/vrs/
           else
             echo "[$APPNAME][$(date)] No update for the database found"
@@ -227,7 +241,7 @@ do
       #cleaning up downloaded files
       [[ -f "${VRS_CONFIG_DIR}/silhouettes.zip" ]] && rm -f "${VRS_CONFIG_DIR}/silhouettes.zip"
       [[ -f "${VRS_CONFIG_DIR}/OperatorFlags.zip" ]] && rm -f "${VRS_CONFIG_DIR}/OperatorFlags.zip"
-      [[ -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" ]] && rm -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz"
+      #[[ -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" ]] && rm -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz"
       [[ -f "${VRS_CONFIG_DIR}/db/${FULLAIRCRAFT_NAME}" ]] && rm -f "${VRS_CONFIG_DIR}/db/${FULLAIRCRAFT_NAME}"
       echo "[$APPNAME][$(date)] Cleaned up downloaded files - if any"
       #calculationg the next run
