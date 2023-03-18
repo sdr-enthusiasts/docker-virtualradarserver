@@ -134,13 +134,11 @@ do
         if [[ "$ACTUAL_SQB" != "$PROBE_SQB" ]]
           then
             echo "[$APPNAME][$(date)] Looks like there was an update for the database. Going to download the updatefile"
-#            echo "$PROBE_SQB" > $ACTUALFILE_SQB
-#            echo "[$APPNAME][$(date)] Updated $ACTUALFILE_SQB to commit ID $PROBE_SQB"
             echo "[$APPNAME][$(date)] Downloading latest FullAircraft update file and uncompress it"
-            if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" ${FULLAIRCRAFT_LINK} && FULLAIRCRAFT_NAME=$(unzip -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" | grep inflating | awk -F'inflating: ' '{print $2}')
+            if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" ${FULLAIRCRAFT_LINK} && FULLAIRCRAFT_NAME=$(unzip -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" -d "${VRS_CONFIG_DIR}/db/" | grep inflating | awk -F "/" '{print $NF}')
               then
                 echo "[$APPNAME][$(date)] Download of the latest FullAircraft update file - OK"
-                echo "[$APPNAME][$(date)] Filename extrated from the tar.gz: ${FULLAIRCRAFT_NAME}"
+                echo "[$APPNAME][$(date)] Filename extrated from the zip: ${FULLAIRCRAFT_NAME}"
                 export FULLAIRCRAFT_NAME
             else
                 echo "[$APPNAME][$(date)] Download of the latest FullAircraft update file - FAIL!"
