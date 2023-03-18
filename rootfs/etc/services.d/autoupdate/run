@@ -17,7 +17,7 @@ EXT_LOCALAC_LINK="https://raw.githubusercontent.com/rikgale/LocalAircraft/main/L
 EXT_MARKERS_LINK="https://raw.githubusercontent.com/rikgale/VRSCustomMarkers/main/MyMarkers1.html"
 EXT_HFDLMARKERS_LINK="https://raw.githubusercontent.com/rikgale/VRSCustomMarkers/main/MyMarkers1HFDL.html"
 #sqb update link
-FULLAIRCRAFT_LINK="https://github.com/rikgale/VRSData/raw/main/FullAircraft.tar.gz"
+FULLAIRCRAFT_LINK="https://github.com/rikgale/VRSData/raw/main/FullAircraft.zip"
 
 #Variables for optimized downloads
 WHICHREPO="https://api.github.com/repos/rikgale/VRSOperatorFlags/branches"
@@ -134,10 +134,10 @@ do
         if [[ "$ACTUAL_SQB" != "$PROBE_SQB" ]]
           then
             echo "[$APPNAME][$(date)] Looks like there was an update for the database. Going to download the updatefile"
-            echo "$PROBE_SQB" > $ACTUALFILE_SQB
-            echo "[$APPNAME][$(date)] Updated $ACTUALFILE_SQB to commit ID $PROBE_SQB"
+#            echo "$PROBE_SQB" > $ACTUALFILE_SQB
+#            echo "[$APPNAME][$(date)] Updated $ACTUALFILE_SQB to commit ID $PROBE_SQB"
             echo "[$APPNAME][$(date)] Downloading latest FullAircraft update file and uncompress it"
-            if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" ${FULLAIRCRAFT_LINK} && FULLAIRCRAFT_NAME=$(tar xvfz "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" -C "${VRS_CONFIG_DIR}/db/")
+            if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" ${FULLAIRCRAFT_LINK} && FULLAIRCRAFT_NAME=$(unzip -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" | grep inflating | awk -F'inflating: ' '{print $2}')
               then
                 echo "[$APPNAME][$(date)] Download of the latest FullAircraft update file - OK"
                 echo "[$APPNAME][$(date)] Filename extrated from the tar.gz: ${FULLAIRCRAFT_NAME}"
@@ -201,6 +201,8 @@ do
             }
               then
                 echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - OK"
+                echo "$PROBE_SQB" > $ACTUALFILE_SQB
+                echo "[$APPNAME][$(date)] Updated $ACTUALFILE_SQB to commit ID $PROBE_SQB"
               else
                 echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - FAIL!"
                 echo "[$APPNAME][$(date)] Restoring Backup."
