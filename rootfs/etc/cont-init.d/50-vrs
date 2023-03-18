@@ -35,8 +35,9 @@ touch $ACTUALFILE_SQB
 #debugging stuff
 #echo $ACTUAL
 #echo $PROBE
+BUILD_DATE=$(cat "${VRS_DIR}"/builddate)
 
-echo "[$APPNAME][$(date)] Initializing Virtual Radar Server..."
+echo "[$APPNAME][$(date)] Initializing Virtual Radar Server, build ${BUILD_DATE}..."
 
 mkdir -p "${VRS_CONFIG_DIR}/flags"
 mkdir -p "${VRS_CONFIG_DIR}/silhouettes"
