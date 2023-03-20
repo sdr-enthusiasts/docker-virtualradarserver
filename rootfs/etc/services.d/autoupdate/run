@@ -16,8 +16,10 @@ EXT_LOCALAC_LINK="https://raw.githubusercontent.com/rikgale/LocalAircraft/main/L
 #ExtraMarkers
 EXT_MARKERS_LINK="https://raw.githubusercontent.com/rikgale/VRSCustomMarkers/main/MyMarkers1.html"
 EXT_HFDLMARKERS_LINK="https://raw.githubusercontent.com/rikgale/VRSCustomMarkers/main/MyMarkers1HFDL.html"
+
 #sqb update link
 FULLAIRCRAFT_LINK="https://github.com/rikgale/VRSData/raw/main/FullAircraft.zip"
+INCREMENTAL_UPD_LINK="https://raw.githubusercontent.com/rikgale/VRSData/main/DailyUpdates/"
 
 #Variables for optimized downloads
 WHICHREPO="https://api.github.com/repos/rikgale/VRSOperatorFlags/branches"
@@ -44,6 +46,9 @@ sleep 5
 #Who we are and what we are doing
 echo "[$APPNAME][$(date)] Autoupdate service started."
 
+#mopping up first because of some changes - incremental updates
+[[ -f "${VRS_CONFIG_DIR}/db/FullAircraft.csv" ]] && rm -f "${VRS_CONFIG_DIR}/db/FullAircraft.csv"
+
 if [[ -n "${VRS_DEBUG_NOAUTOUPDATE}" ]]
   then
     echo "[$APPNAME][$(date)] debugging set, exited"
@@ -53,7 +58,9 @@ fi
 #Let's go
 while true
 do
-      #we need these two in the loop, otherwise they will never get updated
+      #lets reset this variable first
+      export FULLAIRCRAFT_NAME="none"
+      #we need these in the loop, otherwise they will never get updated
       ACTUAL=$(<"$ACTUALFILE")
       PROBE=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO | awk  "c&&!--c;/$WHICHBRANCH/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
       #The same check as above but for the custom markers
@@ -134,15 +141,25 @@ do
         if [[ "$ACTUAL_SQB" != "$PROBE_SQB" ]]
           then
             echo "[$APPNAME][$(date)] Looks like there was an update for the database. Going to download the updatefile"
-            echo "[$APPNAME][$(date)] Downloading latest FullAircraft update file and uncompress it"
-            if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" ${FULLAIRCRAFT_LINK} && FULLAIRCRAFT_NAME=$(unzip -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" -d "${VRS_CONFIG_DIR}/db/" | grep inflating | awk -F "/" '{print $NF}')
+            #date of yesterday portion for the filename
+            DATE_YESTERDAY=$(date -d "yesterday" -I)
+            INCREMENTAL_UPD_FILENAME="Updates_${DATE_YESTERDAY}.csv"
+            INCREMENTAL_UPD_DL_LINK="${INCREMENTAL_UPD_LINK}${INCREMENTAL_UPD_FILENAME}"
+            if curl -s -L -o "${VRS_CONFIG_DIR}/db/${INCREMENTAL_UPD_FILENAME}" ${INCREMENTAL_UPD_DL_LINK} 
               then
-                echo "[$APPNAME][$(date)] Download of the latest FullAircraft update file - OK"
-                echo "[$APPNAME][$(date)] Filename extrated from the zip: ${FULLAIRCRAFT_NAME}"
-                export FULLAIRCRAFT_NAME
-            else
-                echo "[$APPNAME][$(date)] Download of the latest FullAircraft update file - FAIL!"
-                SQBFAIL=1
+                echo "[$APPNAME][$(date)] Incremental Update file ${INCREMENTAL_UPD_DL_LINK} downloaded"
+                export FULLAIRCRAFT_NAME=$INCREMENTAL_UPD_FILENAME
+              else
+                echo "[$APPNAME][$(date)] no incremental update file found, going to download the full update"
+                  if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" ${FULLAIRCRAFT_LINK} && FULLAIRCRAFT_NAME=$(unzip -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" -d "${VRS_CONFIG_DIR}/db/" | grep inflating | awk -F "/" '{print $NF}')
+                    then
+                      echo "[$APPNAME][$(date)] Download of the latest FullAircraft update file - OK"
+                      echo "[$APPNAME][$(date)] Filename extrated from the zip: ${FULLAIRCRAFT_NAME}"
+                      export FULLAIRCRAFT_NAME
+                  else
+                      echo "[$APPNAME][$(date)] Download of the latest FullAircraft update file - FAIL!"
+                      SQBFAIL=1
+                  fi
             fi
           #shutting down VRS for the DB backup and update
 #          echo "[$APPNAME][$(date)] Shutting down VRS temporarily as we are going to deal with the database."
