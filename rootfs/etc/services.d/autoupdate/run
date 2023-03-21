@@ -64,7 +64,7 @@ do
       PROBE_SQB=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO_SQB | awk  "c&&!--c;/$WHICHBRANCH_SQB/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
       #Here are some files we're gonna update anyway, no matter of repo updates
       echo "[$APPNAME][$(date)] Updating LocalAircraft.txt"
-      if curl -s -L -o "${VRS_CONFIG_DIR}/LocalAircraft.txt" ${EXT_LOCALAC_LINK}
+      if curl --fail -s -L -o "${VRS_CONFIG_DIR}/LocalAircraft.txt" ${EXT_LOCALAC_LINK}
         then
           echo "[$APPNAME][$(date)] LocalAircraft.txt downloaded and installed successfully"
         else
@@ -87,7 +87,7 @@ do
           fi
 
           #download and install operator flags
-          if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/OperatorFlags.zip" ${FLAGS_LINK} && unzip -u -qq -o -d "${VRS_CONFIG_DIR}/flags" "${VRS_CONFIG_DIR}/OperatorFlags.zip"
+          if curl --fail --compressed -s -L -o "${VRS_CONFIG_DIR}/OperatorFlags.zip" ${FLAGS_LINK} && unzip -u -qq -o -d "${VRS_CONFIG_DIR}/flags" "${VRS_CONFIG_DIR}/OperatorFlags.zip"
             then
               echo "[$APPNAME][$(date)] Operator Flags installed successfully"
             else
@@ -114,7 +114,7 @@ do
                 fi
             elif [[ "${VRS_ENHANCED_MARKERS}" == "HFDL" ]] || [[ "${VRS_ENHANCED_MARKERS}" == "hfdl" ]]
               then
-                if curl -s -L -o "${VRS_EXTENSION_DIR}/MyMarkers1.html" ${EXT_HFDLMARKERS_LINK}
+                if curl --fail -s -L -o "${VRS_EXTENSION_DIR}/MyMarkers1.html" ${EXT_HFDLMARKERS_LINK}
                   then
                     echo "[$APPNAME][$(date)] New HFDL custom marker file installed successfully"
                   else
@@ -135,7 +135,7 @@ do
           then
             echo "[$APPNAME][$(date)] Looks like there was an update for the database. Going to download the updatefile"
             echo "[$APPNAME][$(date)] Downloading latest FullAircraft update file and uncompress it"
-            if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" ${FULLAIRCRAFT_LINK} && FULLAIRCRAFT_NAME=$(unzip -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" -d "${VRS_CONFIG_DIR}/db/" | grep inflating | awk -F "/" '{print $NF}')
+            if curl --fail --compressed -s -L -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" ${FULLAIRCRAFT_LINK} && FULLAIRCRAFT_NAME=$(unzip -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" -d "${VRS_CONFIG_DIR}/db/" | grep inflating | awk -F "/" '{print $NF}')
               then
                 echo "[$APPNAME][$(date)] Download of the latest FullAircraft update file - OK"
                 echo "[$APPNAME][$(date)] Filename extrated from the zip: ${FULLAIRCRAFT_NAME}"

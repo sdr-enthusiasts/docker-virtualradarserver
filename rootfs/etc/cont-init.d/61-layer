@@ -30,7 +30,7 @@ if [[ -n "${VRS_ENHANCED_LAYERS_COUNTRY}" ]]
     cd "${VRS_EXTENSION_DIR}" || exit
     rm "${VRS_CONFIG_DIR}/CustomContent/CustomInjectedFiles"/*.geojson
     echo "[$APPNAME][$(date)] Downloading and installing Enhanced Layers"
-      if curl --compressed -s -L -o "${VRS_EXTENSION_DIR}/enhancedlayers.zip" ${EXT_LAYERS_LINK} &&\
+      if curl --fail --compressed -s -L -o "${VRS_EXTENSION_DIR}/enhancedlayers.zip" ${EXT_LAYERS_LINK} &&\
           unzip -q -o "${VRS_EXTENSION_DIR}/enhancedlayers.zip" &&\
           rm "${VRS_EXTENSION_DIR}/enhancedlayers.zip" &&\
           cp -r "${VRS_EXTENSION_DIR}"/VRSCustomLayers/* "${VRS_EXTENSION_DIR}" &&\
