@@ -15,8 +15,9 @@ FLAGS_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/OperatorFlags.z
 EXT_LOCALAC_LINK="https://raw.githubusercontent.com/rikgale/LocalAircraft/main/LocalAircraft.txt"
 #ExtraMarkers
 EXT_MARKERS_LINK="https://raw.githubusercontent.com/rikgale/VRSCustomMarkers/main/MyMarkers1.html"
+EXT_HFDLMARKERS_LINK="https://raw.githubusercontent.com/rikgale/VRSCustomMarkers/main/MyMarkers1HFDL.html"
 #sqb update link
-FULLAIRCRAFT_LINK="https://github.com/rikgale/VRSData/raw/main/FullAircraft.tar.gz"
+FULLAIRCRAFT_LINK="https://github.com/rikgale/VRSData/raw/main/FullAircraft.zip"
 
 #Variables for optimized downloads
 WHICHREPO="https://api.github.com/repos/rikgale/VRSOperatorFlags/branches"
@@ -31,17 +32,23 @@ WHICHREPO_SQB="https://api.github.com/repos/rikgale/VRSData/branches"
 WHICHBRANCH_SQB="main"
 ACTUALFILE_SQB="$VRS_CONFIG_DIR/commitid_sqb"
 
-#Interval of updatecheck
-UPDATETIME="02:20"
+#Tine of the updatecheck. Changed from 02:20 to 03:30 to hopefully prevent any daylightsavings mishaps
+UPDATETIME="03:20"
 
 #Failsetting for the SQB Backup
 SQBFAIL=0
 
 #Give VRS a bit of time to start
-sleep 10
+sleep 5
 
 #Who we are and what we are doing
 echo "[$APPNAME][$(date)] Autoupdate service started."
+
+if [[ -n "${VRS_DEBUG_NOAUTOUPDATE}" ]]
+  then
+    echo "[$APPNAME][$(date)] debugging set, exited"
+    sleep infinity
+fi
 
 #Let's go
 while true
@@ -57,7 +64,7 @@ do
       PROBE_SQB=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO_SQB | awk  "c&&!--c;/$WHICHBRANCH_SQB/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
       #Here are some files we're gonna update anyway, no matter of repo updates
       echo "[$APPNAME][$(date)] Updating LocalAircraft.txt"
-      if curl -s -L -o "${VRS_CONFIG_DIR}/LocalAircraft.txt" ${EXT_LOCALAC_LINK}
+      if curl --fail -s -L -o "${VRS_CONFIG_DIR}/LocalAircraft.txt" ${EXT_LOCALAC_LINK}
         then
           echo "[$APPNAME][$(date)] LocalAircraft.txt downloaded and installed successfully"
         else
@@ -80,7 +87,7 @@ do
           fi
 
           #download and install operator flags
-          if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/OperatorFlags.zip" ${FLAGS_LINK} && unzip -u -qq -o -d "${VRS_CONFIG_DIR}/flags" "${VRS_CONFIG_DIR}/OperatorFlags.zip"
+          if curl --fail --compressed -s -L -o "${VRS_CONFIG_DIR}/OperatorFlags.zip" ${FLAGS_LINK} && unzip -u -qq -o -d "${VRS_CONFIG_DIR}/flags" "${VRS_CONFIG_DIR}/OperatorFlags.zip"
             then
               echo "[$APPNAME][$(date)] Operator Flags installed successfully"
             else
@@ -97,12 +104,25 @@ do
           echo "[$APPNAME][$(date)] Looks like there was an update for the custom markers. Going to download the file"
           echo "$PROBE_CM" > $ACTUALFILE_CM
           echo "[$APPNAME][$(date)] Updated $ACTUALFILE_CM to commit ID $PROBE_CM"
-          if curl -s -L -o "${VRS_EXTENSION_DIR}/MyMarkers1.html" ${EXT_MARKERS_LINK}
-            then
-              echo "[$APPNAME][$(date)] New custom marker file installed successfully"
+            if [[ "${VRS_ENHANCED_MARKERS}" == "normal" ]]
+              then
+                if curl -s -L -o "${VRS_EXTENSION_DIR}/MyMarkers1.html" ${EXT_MARKERS_LINK}
+                  then
+                    echo "[$APPNAME][$(date)] New ADSB custom marker file installed successfully"
+                  else
+                    echo "[$APPNAME][$(date)] New ADSB custom marker file not installed - failure"
+                fi
+            elif [[ "${VRS_ENHANCED_MARKERS}" == "HFDL" ]] || [[ "${VRS_ENHANCED_MARKERS}" == "hfdl" ]]
+              then
+                if curl --fail -s -L -o "${VRS_EXTENSION_DIR}/MyMarkers1.html" ${EXT_HFDLMARKERS_LINK}
+                  then
+                    echo "[$APPNAME][$(date)] New HFDL custom marker file installed successfully"
+                  else
+                    echo "[$APPNAME][$(date)] New HFDL custom marker file not installed - failure"
+                fi
             else
-              echo "[$APPNAME][$(date)] New custom marker file not installed - failure"
-          fi
+              echo "[$APPNAME][$(date)] No custom markers downloaded, not set in the yaml."
+            fi
         else  
           echo "[$APPNAME][$(date)] No changes found, nothing was downloaded."
       fi      
@@ -114,28 +134,34 @@ do
         if [[ "$ACTUAL_SQB" != "$PROBE_SQB" ]]
           then
             echo "[$APPNAME][$(date)] Looks like there was an update for the database. Going to download the updatefile"
-            echo "$PROBE_SQB" > $ACTUALFILE_SQB
-            echo "[$APPNAME][$(date)] Updated $ACTUALFILE_SQB to commit ID $PROBE_SQB"
             echo "[$APPNAME][$(date)] Downloading latest FullAircraft update file and uncompress it"
-            if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" ${FULLAIRCRAFT_LINK} && FULLAIRCRAFT_NAME=$(tar xvfz "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" -C "${VRS_CONFIG_DIR}/db/")
+            if curl --fail --compressed -s -L -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" ${FULLAIRCRAFT_LINK} && FULLAIRCRAFT_NAME=$(unzip -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" -d "${VRS_CONFIG_DIR}/db/" | grep inflating | awk -F "/" '{print $NF}')
               then
                 echo "[$APPNAME][$(date)] Download of the latest FullAircraft update file - OK"
-                echo "[$APPNAME][$(date)] Filename extrated from the tar.gz: ${FULLAIRCRAFT_NAME}"
+                echo "[$APPNAME][$(date)] Filename extrated from the zip: ${FULLAIRCRAFT_NAME}"
                 export FULLAIRCRAFT_NAME
             else
                 echo "[$APPNAME][$(date)] Download of the latest FullAircraft update file - FAIL!"
                 SQBFAIL=1
             fi
           #shutting down VRS for the DB backup and update
-          echo "[$APPNAME][$(date)] Shutting down VRS temporarily as we are going to deal with the database."
-          s6-svc -wD -d -T 5000 /run/s6/services/vrs/
-          echo "[$APPNAME][$(date)] It's dead, Jim"
-          sleep 5
+#          echo "[$APPNAME][$(date)] Shutting down VRS temporarily as we are going to deal with the database."
+#          s6-svc -wD -d -T 5000 /run/s6/services/vrs/
+#          echo "[$APPNAME][$(date)] It's dead, Jim"
+          sleep 1
+          #delete the prior backup
+          if [ -e "${VRS_CONFIG_DIR}/db/Basestation_Backup.sqb" ]
+            then
+              rm "${VRS_CONFIG_DIR}"/db/Basestation_Backup.sqb
+              echo "[$APPNAME][$(date)] Prior backup removed."
+            else
+              echo "[$APPNAME][$(date)] No prior backup found."
+          fi 
           echo "[$APPNAME][$(date)] Create a backup of the BaseStation.sqb"
           if [[ -n "${VRS_DB_UPDATE_BACKUP_UNCOMPRESSED}" ]]
             then
               #uncompressed backup
-              if cp -f ${VRS_CONFIG_DIR}/db/BaseStation.sqb ${VRS_CONFIG_DIR}/db/Basestation_Backup.sqb
+              if /opt/vrs/scripts/db_backup
                 then
                   echo "[$APPNAME][$(date)] Uncompressed Backup of BaseStation.sqb - OK"
                 else
@@ -144,7 +170,7 @@ do
               fi                
             else
               #compressed backup
-              if gzip -f -k ${VRS_CONFIG_DIR}/db/BaseStation.sqb
+              if /opt/vrs/scripts/db_backup && gzip -f ${VRS_CONFIG_DIR}/db/Basestation_Backup.sqb
                 then
                   echo "[$APPNAME][$(date)] Compressed Backup of BaseStation.sqb - OK"
                 else
@@ -159,7 +185,8 @@ do
             else
               echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - this might take a few moments"
             #we want to see how long this takes...
-            if TIMEFORMAT='The update took %R seconds.'
+            sleep 2
+            if TIMEFORMAT='Runtime of the update: %R seconds.'
             time {
               if [[ -n "${VRS_DB_UPDATE_WITH_VACUUM}" ]]
                 then
@@ -172,13 +199,17 @@ do
             }
               then
                 echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - OK"
+                echo "$PROBE_SQB" > $ACTUALFILE_SQB
+                echo "[$APPNAME][$(date)] Updated $ACTUALFILE_SQB to commit ID $PROBE_SQB"
               else
                 echo "[$APPNAME][$(date)] Merging updates into BaseStation.sqb - FAIL!"
                 echo "[$APPNAME][$(date)] Restoring Backup."
                 if [[ -n "${VRS_DB_UPDATE_BACKUP_UNCOMPRESSED}" ]]
                   then
                     #uncompressed restore
-                    if cp -f ${VRS_CONFIG_DIR}/db/Basestation_Backup.sqb ${VRS_CONFIG_DIR}/db/BaseStation.sqb
+                    echo "[$APPNAME][$(date)] Sleeping for 2 Seconds to let VRS do it's thing with the db"
+                    sleep 2
+                    if /opt/vrs/scripts/db_restore
                       then
                         echo "[$APPNAME][$(date)] Uncompressed Restore of BaseStation.sqb - OK"
                       else
@@ -186,7 +217,9 @@ do
                     fi 
                   else
                     #compressed restore
-                    if gunzip -f -k ${VRS_CONFIG_DIR}/db/BaseStation.sqb.gz
+                    echo "[$APPNAME][$(date)] Sleeping for 2 Seconds to let VRS do it's thing with the db"
+                    sleep 2
+                    if gunzip -f -k ${VRS_CONFIG_DIR}/db/Basestation_Backup.sqb.gz && /opt/vrs/scripts/db_restore
                       then
                         echo "[$APPNAME][$(date)] Compressed Restore of BaseStation.sqb - OK"
                       else
@@ -196,8 +229,8 @@ do
               fi
             fi
           #Restarting VRS after we're finished with the DB thingies
-          echo "[$APPNAME][$(date)] DB maintenance finished, restarting VRS"
-          s6-svc -u /run/s6/services/vrs/
+          echo "[$APPNAME][$(date)] DB maintenance finished"
+#          s6-svc -u /run/s6/services/vrs/
           else
             echo "[$APPNAME][$(date)] No update for the database found"
         fi
@@ -208,7 +241,7 @@ do
       #cleaning up downloaded files
       [[ -f "${VRS_CONFIG_DIR}/silhouettes.zip" ]] && rm -f "${VRS_CONFIG_DIR}/silhouettes.zip"
       [[ -f "${VRS_CONFIG_DIR}/OperatorFlags.zip" ]] && rm -f "${VRS_CONFIG_DIR}/OperatorFlags.zip"
-      [[ -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" ]] && rm -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz"
+      #[[ -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" ]] && rm -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz"
       [[ -f "${VRS_CONFIG_DIR}/db/${FULLAIRCRAFT_NAME}" ]] && rm -f "${VRS_CONFIG_DIR}/db/${FULLAIRCRAFT_NAME}"
       echo "[$APPNAME][$(date)] Cleaned up downloaded files - if any"
       #calculationg the next run

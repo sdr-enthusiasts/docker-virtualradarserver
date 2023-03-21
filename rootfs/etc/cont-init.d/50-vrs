@@ -35,8 +35,9 @@ touch $ACTUALFILE_SQB
 #debugging stuff
 #echo $ACTUAL
 #echo $PROBE
+BUILD_DATE=$(cat "${VRS_DIR}"/builddate)
 
-echo "[$APPNAME][$(date)] Initializing Virtual Radar Server..."
+echo "[$APPNAME][$(date)] Initializing Virtual Radar Server, build ${BUILD_DATE}..."
 
 mkdir -p "${VRS_CONFIG_DIR}/flags"
 mkdir -p "${VRS_CONFIG_DIR}/silhouettes"
@@ -48,7 +49,7 @@ mkdir -p "${VRS_CONFIG_DIR}/CustomContent/CustomInjectedFiles"
 if [ ! -e "${VRS_CONFIG_DIR}/db/BaseStation.sqb" ]
 then
   echo "[$APPNAME][$(date)] Downloading database for Operator Flags"
-  if curl --compressed -s -L -o "${VRS_CONFIG_DIR}/BaseStation.zip" ${FLAGSDB_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/db" "${VRS_CONFIG_DIR}/BaseStation.zip"
+  if curl --fail --compressed -s -L -o "${VRS_CONFIG_DIR}/BaseStation.zip" ${FLAGSDB_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/db" "${VRS_CONFIG_DIR}/BaseStation.zip"
   then
     echo "[$APPNAME][$(date)] Database for Operator Flags installed successfully"
     #that should prevent a DB update right after a fresh download
@@ -92,7 +93,8 @@ else
 fi
 
 # Replace 127.0.0.1 With ReadSB
-sed -i 's#<Address>127.0.0.1</Address>#<Address>readsb</Address>#g' "${VRS_CONFIG_DIR}/Configuration.xml"
+sed -i "s#<Address>127.0.0.1</Address>#<Address>${VRS_SBSHOST:-readsb}</Address>#g" "${VRS_CONFIG_DIR}/Configuration.xml"
+sed -i "s#<Port>30003</Port>#<Port>${VRS_SBSPORT:-30003}</Port>#g" "${VRS_CONFIG_DIR}/Configuration.xml"
 
 #Injecting settings for silhouettes, OpFlags and DB into Configuration.xml
 if ! grep -q "<DatabaseFileName>" "${VRS_CONFIG_DIR}/Configuration.xml"
