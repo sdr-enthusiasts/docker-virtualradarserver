@@ -47,6 +47,7 @@ RUN set -x && \
 #
 # Add some things to make it easier to debug:
 echo "alias dir=\"ls -alsvH\"" >> /root/.bashrc && \
+date > /opt/vrs/builddate && \
 echo "alias nano=\"nano -l\"" >> /root/.bashrc
 
 COPY rootfs/ /

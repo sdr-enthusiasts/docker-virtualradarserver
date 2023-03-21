@@ -16,7 +16,6 @@ LAYER_SCALE_ENABLED="%3cInjectSettings%3e%0a++++++%3cEnabled%3etrue%3c%2fEnabled
 LAYER_FULLSCREEN_DISABLED="%3cInjectSettings%3e%0a++++++%3cEnabled%3efalse%3c%2fEnabled%3e%0a++++++%3cPathAndFile%3e%2fdesktop\.html%3c%2fPathAndFile%3e%0a++++++%3cInjectionLocation%3eBody%3c%2fInjectionLocation%3e%0a++++++%3cStart%3efalse%3c%2fStart%3e%0a++++++%3cFile%3e%2froot%2f\.local%2fshare%2fVirtualRadar%2fCustomContent%2fCustomInjectedFiles%2fFullScreen\.html%3c%2fFile%3e%0a++++%3c%2fInjectSettings%3e%0a"
 LAYER_FULLSCREEN_ENABLED="%3cInjectSettings%3e%0a++++++%3cEnabled%3etrue%3c%2fEnabled%3e%0a++++++%3cPathAndFile%3e%2fdesktop\.html%3c%2fPathAndFile%3e%0a++++++%3cInjectionLocation%3eBody%3c%2fInjectionLocation%3e%0a++++++%3cStart%3efalse%3c%2fStart%3e%0a++++++%3cFile%3e%2froot%2f\.local%2fshare%2fVirtualRadar%2fCustomContent%2fCustomInjectedFiles%2fFullScreen\.html%3c%2fFile%3e%0a++++%3c%2fInjectSettings%3e%0a"
 
-
 #Downloadlinks
 EXT_LAYERS_LINK="https://github.com/rikgale/VRSCustomLayers/raw/main/VRSCustomLayers.zip"
 
@@ -31,7 +30,7 @@ if [[ -n "${VRS_ENHANCED_LAYERS_COUNTRY}" ]]
     cd "${VRS_EXTENSION_DIR}" || exit
     rm "${VRS_CONFIG_DIR}/CustomContent/CustomInjectedFiles"/*.geojson
     echo "[$APPNAME][$(date)] Downloading and installing Enhanced Layers"
-      if curl --compressed -s -L -o "${VRS_EXTENSION_DIR}/enhancedlayers.zip" ${EXT_LAYERS_LINK} &&\
+      if curl --fail --compressed -s -L -o "${VRS_EXTENSION_DIR}/enhancedlayers.zip" ${EXT_LAYERS_LINK} &&\
           unzip -q -o "${VRS_EXTENSION_DIR}/enhancedlayers.zip" &&\
           rm "${VRS_EXTENSION_DIR}/enhancedlayers.zip" &&\
           cp -r "${VRS_EXTENSION_DIR}"/VRSCustomLayers/* "${VRS_EXTENSION_DIR}" &&\
