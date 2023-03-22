@@ -1,0 +1,27 @@
+---
+name: Linting (YAML)
+
+on:
+  pull_request:
+    branches:
+      - main
+      - v3p11
+      # only run when yaml files are updated
+    paths:
+      - '**.yml'
+
+jobs:
+  yamllint:
+    name: Run yamllint against YAML files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: yaml-lint
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          config_data: |
+            extends: default
+            rules:
+              line-length:
+                max: 120
+                level: warning
