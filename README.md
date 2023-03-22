@@ -27,11 +27,16 @@ services:
     environment:
         - VRS_ADMIN_USERNAME=your_webadmin_user
         - VRS_ADMIN_PASSWORD=your_webadmin_pass
-        - VRS_CULTURE=de-DE
-        #see http://msdn.microsoft.com/en-us/goglobal/bb896001.aspx for a list of supported culture names. Not all translations may be available
+        - VRS_CULTURE=de-DE #see http://msdn.microsoft.com/en-us/goglobal/bb896001.aspx for a list of supported culture names. Not all translations may be available
         - VRS_DB_UPDATE_POLICY_FULLAUTO=yes #default unset / no
         - VRS_DB_UPDATE_WITH_VACUUM=yes #default unset / no
         - VRS_DB_UPDATE_BACKUP_UNCOMPRESSED=yes #default unset / compressed
+        - VRS_ENHANCED_MARKERS=normal #default unset
+        - VRS_ENHANCED_LAYERS_COUNTRY=UK #Currently available: UK,DE,USA1,SE
+        - VRS_SBSHOST=192.168.2.8
+        - VRS_SBSPORT=30003
+        - VRS_ENHANCED_LAYERS_OPENWX_APIKEY=yourapikey
+        - VRS_ENHANCED_LAYERS_OPENAIP_APIKEY=yourapikey
     tmpfs:
         - /tmp:rw,nosuid,nodev,noexec,relatime,size=128M
     volumes:
@@ -48,7 +53,7 @@ Everything is constantly updated and help is much appreciated. Any requests for 
 
 Subsequent updates of the files occur on a container-restart. Additionally, the originating repository is checked every 6 hours for updates. New files will be downloaded automatically.
 
-Requests for additions to the LocalAircraft.txt go [here](https://github.com/rikgale/LocalAircraft/issues)
+Requests for additions to the LocalAircraft.txt go [Here](https://github.com/rikgale/LocalAircraft/issues)
 
 ## Scope of supply
 
@@ -73,6 +78,12 @@ The container image comes with the following preinstalled VRS V3 [plugins](https
 | `VRS_DB_UPDATE_WITH_VACUUM` | Works only in conjunction with `VRS_DB_UPDATE_POLICY_FULLAUTO`. DB is compressed after update. The update takes longer but the sqb will be smaller.| `unset` |
 | `VRS_DB_UPDATE_BACKUP_UNCOMPRESSED` | Works only in conjunction with `VRS_DB_UPDATE_POLICY_FULLAUTO`. Prior the update a backup of the database is created. If this is set, the backup will remain uncompressed | `unset` |
 | `VRS_CULTURE` | see [here](http://msdn.microsoft.com/en-us/goglobal/bb896001.aspx) for a list of supported culture names. Not all translations may be available | `unset` means `en-GB` |
+| `VRS_ENHANCED_MARKERS` | Installs and activates VRS custom markers. `normal` is for the ADS-B set, `hfdl` is for an extra set in case you have a HFDL input and `disable` deactivates the markers. [here](https://github.com/rikgale/VRSCustomMarkers) are more details about the markers. | `unset` |
+| `VRS_ENHANCED_LAYERS_COUNTRY` | Installs and activates VRS enhanced layers. Takes a country code as input. Currently availble are `UK`, `DE`, `USA1`, `SE`. [here](https://github.com/rikgale/VRSCustomLayers) are more details, feel free to open an issue there to get your country on board. | `unset` - Unknown country codes will default to UK |
+| `VRS_ENHANCED_LAYERS_OPENWX_APIKEY` | For the enhanced weather layers to work, you need an API key. Again,  [here](https://github.com/rikgale/VRSCustomLayers) are more details, and instructions how to obtain an API key. | `unset` |
+| `VRS_ENHANCED_LAYERS_OPENAIP_APIKEY` | For the OpenAIP layers to work, you need an API key. Again,  [here](https://github.com/rikgale/VRSCustomLayers) are more details, and instructions how to obtain an API key. | `unset` |
+| `VRS_SBSHOST` | IP or hostname of a BaseStation ADS-B data feed provider. In general it's more easy to set up the receivers on the WebAdmin panel | `unset` defaults to `readsb` |
+| `VRS_SBSPORT` | Port the BaseStation ADS-B data feed provider | `unset` defaults to `30003` |
 
 If not stated otherwise, the envvars should be set to "yes" or "true" (or actually anything, as long they are set.)
 

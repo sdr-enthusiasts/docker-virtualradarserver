@@ -1,0 +1,6 @@
+#!/bin/bash
+sqlite3 "${VRS_CONFIG_DIR}"/db/BaseStation.sqb 1>/dev/null <<EOF
+PRAGMA locking_mode=EXCLUSIVE;
+PRAGMA busy_timeout=50000;
+.restore /root/.local/share/VirtualRadar/db/Basestation_Backup.sqb
+EOF

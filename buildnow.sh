@@ -7,7 +7,8 @@ set -x
 [[ "$ARCHS" == "" ]] && ARCHS="linux/armhf,linux/arm64,linux/amd64,linux/i386"
 
 BASETARGET1=ghcr.io/sdr-enthusiasts
-BASETARGET2=kx1t
+BASETARGET2=rhodan76
+#BASETARGET2=kx1t
 
 IMAGE1="$BASETARGET1/$(pwd | sed -n 's|.*/docker-\(.*\)|\1|p'):$TAG"
 IMAGE2="$BASETARGET2/$(pwd | sed -n 's|.*/docker-\(.*\)|\1|p'):$TAG"
