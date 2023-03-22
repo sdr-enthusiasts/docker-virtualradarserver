@@ -6,8 +6,8 @@ set -x
 [[ "$BRANCH" == "main" ]] && TAG="latest" || TAG="$BRANCH"
 [[ "$ARCHS" == "" ]] && ARCHS="linux/armhf,linux/arm64,linux/amd64,linux/i386"
 
-BASETARGET1=rhodan76
 BASETARGET1=ghcr.io/sdr-enthusiasts
+BASETARGET2=rhodan76
 #BASETARGET2=kx1t
 
 IMAGE1="$BASETARGET1/$(pwd | sed -n 's|.*/docker-\(.*\)|\1|p'):$TAG"
