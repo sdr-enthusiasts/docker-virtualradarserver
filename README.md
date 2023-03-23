@@ -100,7 +100,7 @@ Well, that happens. Drop by our [Discord](https://discord.com/channels/734090820
 SDR Enthusiasts are very grateful for the following resources which have been used in the creation of this container:
 
 * Virtual Radar Server (Andrew Whewell) [VRS on GitHub](https://github.com/vradarserver/vrs) / [VRS Website](http://www.virtualradarserver.co.uk/)
-* Database snapshot original data provide from PlaneBase, [mictronics aircraft database](https://www.mictronics.de/aircraft-database/export.php), VRS Standing Data and various user additions.
+* Database snapshot for base original data provided from PlaneBase, [mictronics aircraft database](https://www.mictronics.de/aircraft-database/export.php). Ongoing updates from VRS Standing Data and various user contributions.
 * Docker container base image, original container and other docker related fun-times ([SDR Enthusiasts](https://github.com/sdr-enthusiasts))
 * Container maintainer (Rhodan76)
 * [Sideviews](https://github.com/rikgale/VRSOperatorFlags) and [Silhoeuttes](https://github.com/rikgale/VRSOperatorFlags) (rikgale)
