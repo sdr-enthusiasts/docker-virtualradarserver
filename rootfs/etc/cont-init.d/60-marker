@@ -2,7 +2,7 @@
 # shellcheck shell=bash
 
 APPNAME="$(hostname)/vrs-ccmarker"
-VRS_DIR="/opt/vrs"
+#VRS_DIR="/opt/vrs"
 VRS_CONFIG_DIR="/root/.local/share/VirtualRadar"
 VRS_EXTENSION_DIR="/root/.local/share/VirtualRadar/CustomContent/CustomInjectedFiles"
 
@@ -26,7 +26,7 @@ if [[ -n "${VRS_ENHANCED_MARKERS}" ]]
       if [[ "${VRS_ENHANCED_MARKERS}" == "normal" ]]
         then
           echo "[$APPNAME][$(date)] Normal Custom markers"
-            if curl -s -L -o "${VRS_EXTENSION_DIR}/MyMarkers1.html" ${EXT_MARKERS_LINK}
+            if curl --fail -s -L -o "${VRS_EXTENSION_DIR}/MyMarkers1.html" ${EXT_MARKERS_LINK}
               then
                 echo "[$APPNAME][$(date)] Normal Custom marker file download - OK"
                 echo "[$APPNAME][$(date)] Injecting custom marker config into PluginsConfiguration.txt"
@@ -43,7 +43,7 @@ if [[ -n "${VRS_ENHANCED_MARKERS}" ]]
       elif [[ "${VRS_ENHANCED_MARKERS}" == "HFDL" ]] || [[ "${VRS_ENHANCED_MARKERS}" == "hfdl" ]]
           then
             echo "[$APPNAME][$(date)] HFDL Custom markers"
-              if curl -s -L -o "${VRS_EXTENSION_DIR}/MyMarkers1.html" ${EXT_HFDLMARKERS_LINK}
+              if curl --fail -s -L -o "${VRS_EXTENSION_DIR}/MyMarkers1.html" ${EXT_HFDLMARKERS_LINK}
                 then
                   echo "[$APPNAME][$(date)] HFDL Custom marker file download - OK"
                   echo "[$APPNAME][$(date)] Injecting custom marker config into PluginsConfiguration.txt"
