@@ -45,7 +45,7 @@ services:
         - "/etc/timezone:/etc/timezone:ro"
 ```
 
-Virtual Radar server can be accessed at `http://<HOST_IP>:8085/VirtualRadar` VRS should auto default to desktop or mobile display depending on the type of device you are using to access it. You can force this by appending `/desktop.html` or `mobile.html` to the web address give here.
+Virtual Radar server can be accessed at `http://<HOST_IP>:8085/VirtualRadar` VRS should auto default to desktop or mobile display depending on the type of device you are using to access it. You can force this by appending `/desktop.html` or `/mobile.html` to the web address give here.
 
 The final configuration is done via the VRS Web Admin Interface, which can be found at `http://<HOST_IP>:8085/VirtualRadar/WebAdmin/Index.html`
 After startup, VRS will point to `readsb` as it's first and only receiver - which will work out of the box if the container is in the same stack as `readsb`, which is the case if you followed [this guide](https://sdr-enthusiasts.gitbook.io/ads-b/).
