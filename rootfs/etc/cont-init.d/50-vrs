@@ -86,7 +86,7 @@ then
   echo "[$APPNAME][$(date)] No Configuration.xml found, doing first run initialization."
   cd "${VRS_DIR}"
   # shellcheck disable=SC2068,SC2086
-  timeout "$MAXTIME" exec ${VRS_EXEC} ${VRS_CMDLINE[@]} >/dev/null 2>&1
+  timeout "$MAXTIME" exec ${VRS_EXEC} ${VRS_CMDLINE[@]} #>/dev/null 2>&1
   echo "[$APPNAME][$(date)] Virtual Radar Server has been initialized."
 else
   echo "[$APPNAME][$(date)] Configuration.xml found, skipping initialization."

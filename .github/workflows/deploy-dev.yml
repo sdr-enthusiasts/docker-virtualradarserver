@@ -24,12 +24,12 @@ on:
 #  - REPO: repo name on dockerhub
 #  - IMAGE: image name on dockerhub
 env:
-#  DOCKERHUB_REPO: sdr-enthusiasts
-#  DOCKERHUB_IMAGE: vrs
-  GHCR_IMAGE: sdr-enthusiasts/vrs
-  GHCR_REGISTRY: ghcr.io
-  GH_LABEL: dev
-  GHCR_TAG: dev
+  DOCKERHUB_REPO: rhodan76
+  DOCKERHUB_IMAGE: vrs
+#  GHCR_IMAGE: sdr-enthusiasts/vrs
+#  GHCR_REGISTRY: ghcr.io
+#  GH_LABEL: dev
+#  GHCR_TAG: dev
 
 jobs:
 
