@@ -8,7 +8,10 @@ export VRS_CONFIG_DIR
 
 #Silhouettes, OpFlags and DB
 SILH_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/Silhouettes.zip"
+SILH_DV_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/DVSilhouettes.zip"
 FLAGS_LINK="https://github.com/rikgale/VRSOperatorFlags/raw/main/OperatorFlags.zip"
+#we need a permanent variable to reset if the sils are changed
+SILH_FILE="$VRS_CONFIG_DIR/silh"
 
 #rickgales extras
 #LocalAircraft.txt
@@ -81,18 +84,44 @@ do
       #if there is a change in the commit ID, download and install sil/opflags
       echo "[$APPNAME][$(date)] ----------------------------------------"
       echo "[$APPNAME][$(date)] Looking for Sil / Operator Flags updates"
+      #following is some logic to force a download of the silh files if the dv envar is changed
+      SILH_PROBE=$(<"$SILH_FILE")
+      [ -n "${VRS_SILHOUETTES_DUALVIEW}" ] && echo "dv" > $SILH_FILE || echo "sv" > $SILH_FILE
+      ACTUAL_SILH=$(<"$SILH_FILE")
+      if [[ "$SILH_PROBE" != "$ACTUAL_SILH" ]]
+        then
+          ACTUAL="reset"
+      fi
       if [[ "$ACTUAL" != "$PROBE" ]]
         then
           echo "[$APPNAME][$(date)] Looks like there was an update for Sil /Operator Flags. Going to download the files"
           echo "$PROBE" > $ACTUALFILE
           echo "[$APPNAME][$(date)] Updated $ACTUALFILE to commit ID $PROBE"
-          if curl --fail --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" ${SILH_LINK} && unzip -u -qq -o -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
+          if [[ -n "${VRS_SILHOUETTES_DUALVIEW}" ]]
             then
-              echo "[$APPNAME][$(date)] Silhouettes installed successfully"
-            else
-              echo "[$APPNAME][$(date)] Silhouettes not installed - failure"
+              if curl --fail --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettesDV.zip" ${SILH_DV_LINK} && rm ${VRS_CONFIG_DIR}/silhouettes/* && unzip -u -qq -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettesDV.zip"
+                then
+                  echo "[$APPNAME][$(date)] Dual View Silhouettes installed successfully"
+                else
+                  echo "[$APPNAME][$(date)] Dual View Silhouettes not installed - failure"
+              fi
           fi
-
+              if [[ -n "${VRS_SILHOUETTES_DUALVIEW}" ]]
+                then
+                  if curl --fail --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" ${SILH_LINK} && unzip -u -qq -n -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
+                    then
+                      echo "[$APPNAME][$(date)] Silhouettes installed successfully - DV Setup"
+                    else
+                      echo "[$APPNAME][$(date)] Silhouettes not installed - DV Setup - failure"
+                  fi
+                else
+                  if curl --fail --compressed -s -L -o "${VRS_CONFIG_DIR}/silhouettes.zip" ${SILH_LINK} && unzip -u -qq -o -d "${VRS_CONFIG_DIR}/silhouettes" "${VRS_CONFIG_DIR}/silhouettes.zip"
+                    then
+                      echo "[$APPNAME][$(date)] Silhouettes installed successfully"
+                    else
+                      echo "[$APPNAME][$(date)] Silhouettes not installed - failure"
+                  fi
+              fi
           #download and install operator flags
           if curl --fail --compressed -s -L -o "${VRS_CONFIG_DIR}/OperatorFlags.zip" ${FLAGS_LINK} && unzip -u -qq -o -d "${VRS_CONFIG_DIR}/flags" "${VRS_CONFIG_DIR}/OperatorFlags.zip"
             then
