@@ -1,0 +1,14 @@
+action_id: trunk-upgrade-available
+date: 2023-03-30 03:45:27
+run: trunk upgrade --notify --allow-daemon-start=false
+run_from: ""
+trigger: schedule 1h
+result:
+  exit_code: 127
+  out: ""
+  err: "trunk-upgrade-available: line 1: trunk: command not found\n"
+timestamp: 1680147927
+full_timestamp:
+  nanos: 446559000
+  seconds: 1680147927
+trunk_version: 1.6.0
