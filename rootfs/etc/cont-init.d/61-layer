@@ -48,6 +48,9 @@ if [[ -n "${VRS_ENHANCED_LAYERS_COUNTRY}" ]]
               (usa1) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
                 rename -f 's/USA1//' -- *.geojson
                 ;;
+              (usaaz) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
+                rename -f 's/USAAZ//' -- *.geojson
+                ;;
               (se) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
                 rename -f 's/SE//' -- *.geojson
                 ;;
