@@ -54,6 +54,9 @@ if [[ -n "${VRS_ENHANCED_LAYERS_COUNTRY}" ]]
               (se) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
                 rename -f 's/SE//' -- *.geojson
                 ;;
+              (au) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
+                rename -f 's/AU//' -- *.geojson
+                ;;
               (*) echo "[$APPNAME][$(date)] Unknown or wrong country, default set to UK"
                 ;;
             esac
