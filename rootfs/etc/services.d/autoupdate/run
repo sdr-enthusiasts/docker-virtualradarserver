@@ -172,12 +172,13 @@ do
             echo "[$APPNAME][$(date)] Looks like there was an update for the database. Going to download the updatefile"
             #date of yesterday portion for the filename
             DATE_YESTERDAY=$(date -d "yesterday" -I)
-            INCREMENTAL_UPD_FILENAME="Updates_${DATE_YESTERDAY}.csv"
+            INCREMENTAL_UPD_FILENAME="Updates_${DATE_YESTERDAY}.zip"
             INCREMENTAL_UPD_DL_LINK="${INCREMENTAL_UPD_LINK}${INCREMENTAL_UPD_FILENAME}"
-            if curl --fail -s -L -o "${VRS_CONFIG_DIR}/db/${INCREMENTAL_UPD_FILENAME}" ${INCREMENTAL_UPD_DL_LINK} 
+            if curl --fail --compressed -s -L -o "${VRS_CONFIG_DIR}/db/${INCREMENTAL_UPD_FILENAME}" "${INCREMENTAL_UPD_DL_LINK}" && FULLAIRCRAFT_NAME=$(unzip -o "${VRS_CONFIG_DIR}/db/${INCREMENTAL_UPD_FILENAME}" -d "${VRS_CONFIG_DIR}/db/" | grep inflating | awk -F "/" '{print $NF}')
               then
                 echo "[$APPNAME][$(date)] Incremental Update file ${INCREMENTAL_UPD_DL_LINK} downloaded"
-                export FULLAIRCRAFT_NAME=$INCREMENTAL_UPD_FILENAME
+                echo "[$APPNAME][$(date)] Filename extrated from the zip: ${FULLAIRCRAFT_NAME}"
+                export FULLAIRCRAFT_NAME
               else
                 echo "[$APPNAME][$(date)] no incremental update file found, going to download the full update"
                   if curl --fail --compressed -s -L -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" ${FULLAIRCRAFT_LINK} && FULLAIRCRAFT_NAME=$(unzip -o "${VRS_CONFIG_DIR}/db/FullAircraft.zip" -d "${VRS_CONFIG_DIR}/db/" | grep inflating | awk -F "/" '{print $NF}')
