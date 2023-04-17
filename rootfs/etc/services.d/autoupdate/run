@@ -197,16 +197,23 @@ do
 #          echo "[$APPNAME][$(date)] It's dead, Jim"
           sleep 1
           #delete the prior backup
-          if [ -e "${VRS_CONFIG_DIR}/db/Basestation_Backup.sqb" ]
-            then
-              rm "${VRS_CONFIG_DIR}"/db/Basestation_Backup.sqb
-              echo "[$APPNAME][$(date)] Prior backup removed."
-            else
-              echo "[$APPNAME][$(date)] No prior backup found."
-          fi 
+#          if [ -e "${VRS_CONFIG_DIR}/db/Basestation_Backup.sqb" ]
+#            then
+#              mv -f "${VRS_CONFIG_DIR}"/db/Basestation_Backup.sqb "${VRS_CONFIG_DIR}"/db/Basestation_Backup.sqb.1
+#              echo "[$APPNAME][$(date)] Prior backup moved to secondary."
+#            else
+#              echo "[$APPNAME][$(date)] No prior backup found."
+#          fi 
           echo "[$APPNAME][$(date)] Create a backup of the BaseStation.sqb"
           if [[ -n "${VRS_DB_UPDATE_BACKUP_UNCOMPRESSED}" ]]
             then
+              if [ -e "${VRS_CONFIG_DIR}/db/Basestation_Backup.sqb" ]
+                then
+                  mv -f "${VRS_CONFIG_DIR}"/db/Basestation_Backup.sqb "${VRS_CONFIG_DIR}"/db/Basestation_Backup.sqb.1
+                  echo "[$APPNAME][$(date)] Prior backup moved to secondary."
+                else
+                  echo "[$APPNAME][$(date)] No prior backup found."
+              fi
               #uncompressed backup
               if /opt/vrs/scripts/db_backup
                 then
@@ -216,6 +223,13 @@ do
                   SQBFAIL=1 
               fi                
             else
+              if [ -e "${VRS_CONFIG_DIR}/db/Basestation_Backup.sqb.gz" ]
+                then
+                  mv -f "${VRS_CONFIG_DIR}"/db/Basestation_Backup.sqb.gz "${VRS_CONFIG_DIR}"/db/Basestation_Backup.sqb.gz.1
+                  echo "[$APPNAME][$(date)] Prior backup moved to secondary."
+                else
+                  echo "[$APPNAME][$(date)] No prior backup found."
+              fi
               #compressed backup
               if /opt/vrs/scripts/db_backup && gzip -f ${VRS_CONFIG_DIR}/db/Basestation_Backup.sqb
                 then
@@ -288,8 +302,15 @@ do
       #cleaning up downloaded files
       [[ -f "${VRS_CONFIG_DIR}/silhouettes.zip" ]] && rm -f "${VRS_CONFIG_DIR}/silhouettes.zip"
       [[ -f "${VRS_CONFIG_DIR}/OperatorFlags.zip" ]] && rm -f "${VRS_CONFIG_DIR}/OperatorFlags.zip"
-      #[[ -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz" ]] && rm -f "${VRS_CONFIG_DIR}/db/FullAircraft.tar.gz"
-      [[ -f "${VRS_CONFIG_DIR}/db/${FULLAIRCRAFT_NAME}" ]] && rm -f "${VRS_CONFIG_DIR}/db/${FULLAIRCRAFT_NAME}"
+      #deleting any left over .csv files in the db folder
+      DBUPDATECSVFILES=("${VRS_CONFIG_DIR}/db/*.csv")
+        for CSVUPD in $DBUPDATECSVFILES
+          do
+#            echo "[$APPNAME][$(date)] Deleting file: ${CSVUPD}"
+            rm -f "${CSVUPD}"
+          done
+      [[ -f "${VRS_CONFIG_DIR}/db/${INCREMENTAL_UPD_FILENAME}" ]] && rm -f "${VRS_CONFIG_DIR}/db/${INCREMENTAL_UPD_FILENAME}"
+      [[ -d "${VRS_EXTENSION_DIR}/VRSCustomLayers" ]] && rm -r -f "${VRS_EXTENSION_DIR}/VRSCustomLayers"
       echo "[$APPNAME][$(date)] Cleaned up downloaded files - if any"
       #calculationg the next run
       NEXTRUN_SECONDS=$((($(date -f - +%s- <<<${UPDATETIME}$' tomorrow\nnow')0)%86400))
