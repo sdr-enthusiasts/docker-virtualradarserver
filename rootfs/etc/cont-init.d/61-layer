@@ -75,6 +75,10 @@ if [[ -n "${VRS_ENHANCED_LAYERS_COUNTRY}" ]]
                     echo "[$APPNAME][$(date)] Enhanced Layers API Keys config injection - Failure"
                 fi
             fi
+            if [[ -n "${VRS_ENHANCED_LAYERS_DEFAULT_MAP}" ]]
+              then
+                sed -i -e "s/##DEFAULTMAP##/${VRS_ENHANCED_LAYERS_DEFAULT_MAP}/g" ${VRS_EXTENSION_DIR}/EndOfBody.html
+            fi
         else        
           echo "[$APPNAME][$(date)] Enhanced Layers archive download and uncompress - Failure"
       fi
