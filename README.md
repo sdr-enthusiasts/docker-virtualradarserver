@@ -33,6 +33,7 @@ services:
         - VRS_DB_UPDATE_BACKUP_UNCOMPRESSED=yes #default unset / compressed
         - VRS_ENHANCED_MARKERS=normal #default unset
         - VRS_ENHANCED_LAYERS_COUNTRY=UK #Currently available: UK,DE,USA1,SE
+        - VRS_ENHANCED_LAYERS_DEFAULT_MAP=1 #1: OpenStreetMap, 2: OpenStreetMap Dark, 3: OpenTopoMap, 4: WaterColour, 5: CartoDark, 6: Terrain, 7: Satellite
         - VRS_SBSHOST=readsb  #put IP or container name of data source here
         - VRS_SBSPORT=30003
         - VRS_ENHANCED_LAYERS_OPENWX_APIKEY=yourapikey
@@ -82,6 +83,7 @@ The container image comes with the following preinstalled VRS V3 [plugins](https
 | `VRS_CULTURE` | see [here](http://msdn.microsoft.com/en-us/goglobal/bb896001.aspx) for a list of supported culture names. Not all translations may be available | `unset` means `en-GB` |
 | `VRS_ENHANCED_MARKERS` | Installs and activates VRS custom markers. `normal` is for the ADS-B set, `hfdl` is for an extra set in case you have a HFDL input and `disable` deactivates the markers. [here](https://github.com/rikgale/VRSCustomMarkers) are more details about the markers. | `unset` |
 | `VRS_ENHANCED_LAYERS_COUNTRY` | Installs and activates VRS enhanced layers. Takes a country code as input. Currently availble are `UK`, `DE`, `USA1`, `SE`. [here](https://github.com/rikgale/VRSCustomLayers) are more details, feel free to open an issue there to get your country on board. | `unset` - Unknown country codes will default to UK |
+| `VRS_ENHANCED_LAYERS_DEFAULT_MAP` | The number of the map to set as default from: 1: OpenStreetMap, 2: OpenStreetMap Dark, 3: OpenTopoMap, 4: WaterColour, 5: CartoDark, 6: Terrain, 7: Satellite | `unset/invalid` - Defaults to OpenStreetMap |
 | `VRS_ENHANCED_LAYERS_OPENWX_APIKEY` | For the enhanced weather layers to work, you need an API key. Again, [here](https://github.com/rikgale/VRSCustomLayers) are more details, and instructions how to obtain an API key. | `unset` |
 | `VRS_ENHANCED_LAYERS_OPENAIP_APIKEY` | For the OpenAIP layers to work, you need an API key. Again, [here](https://github.com/rikgale/VRSCustomLayers) are more details, and instructions how to obtain an API key. | `unset` |
 | `VRS_SBSHOST` | IP or hostname of a BaseStation ADS-B data feed provider. In general it's more easy to set up the receivers on the WebAdmin panel | `unset` defaults to `readsb` |
