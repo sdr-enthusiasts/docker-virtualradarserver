@@ -77,7 +77,7 @@ if [[ -n "${VRS_ENHANCED_LAYERS_COUNTRY}" ]]
             fi
             if [[ -n "${VRS_ENHANCED_LAYERS_DEFAULT_MAP}" ]]
               then
-                sed -i -e "s/##DEFAULTMAP##/${VRS_ENHANCED_LAYERS_DEFAULT_MAP}/g" ${VRS_EXTENSION_DIR}/EndOfBody.html
+                sed -i "s|##EXTERNALCONFIG##|$(sed -e 's|/\*[^*]*\*/||g' <<< ${VRS_ENHANCED_LAYERS_CONFIG//[[:space:]]/})|g" ${VRS_EXTENSION_DIR}/EndOfBody.html
             fi
         else        
           echo "[$APPNAME][$(date)] Enhanced Layers archive download and uncompress - Failure"
