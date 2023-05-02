@@ -9,41 +9,62 @@ This container initially expects SBS data input via network from a running insta
 
 It will run on a Raspberry Pi, recommended is a Raspberry Pi 4 with at least 2GB RAM. As VRS is a bit of ressource hog, your results will depend very much on the amount of planes your receiver picks up (or you get from some other sources).
 
-## example docker-compose.yml
+## Example docker-compose.yml
 
 ```
 version: '3.8'
 
 services:
-
   vrs:
-    image: ghcr.io/sdr-enthusiasts/vrs:dev
+    image: ghcr.io/sdr-enthusiasts/vrs:latest
     tty: true
     container_name: vrs
-    hostname: vrs
-    restart: always
+    restart: unless-stopped
     ports:
-        - 8085:8080
+      - 8085:8080
     environment:
-        - VRS_ADMIN_USERNAME=your_webadmin_user
-        - VRS_ADMIN_PASSWORD=your_webadmin_pass
-        - VRS_CULTURE=de-DE #see http://msdn.microsoft.com/en-us/goglobal/bb896001.aspx for a list of supported culture names. Not all translations may be available
-        - VRS_DB_UPDATE_POLICY_FULLAUTO=yes #default unset / no
-        - VRS_DB_UPDATE_WITH_VACUUM=yes #default unset / no
-        - VRS_DB_UPDATE_BACKUP_UNCOMPRESSED=yes #default unset / compressed
-        - VRS_ENHANCED_MARKERS=normal #default unset
-        - VRS_ENHANCED_LAYERS_COUNTRY=UK #Currently available: UK,DE,USA1,SE
-        - VRS_ENHANCED_LAYERS_DEFAULT_MAP=1 #1: OpenStreetMap, 2: OpenStreetMap Dark, 3: OpenTopoMap, 4: WaterColour, 5: CartoDark, 6: Terrain, 7: Satellite
-        - VRS_SBSHOST=readsb  #put IP or container name of data source here
-        - VRS_SBSPORT=30003
-        - VRS_ENHANCED_LAYERS_OPENWX_APIKEY=yourapikey
-        - VRS_ENHANCED_LAYERS_OPENAIP_APIKEY=yourapikey
+      - VRS_ADMIN_USERNAME=your_webadmin_user
+      - VRS_ADMIN_PASSWORD=your_webadmin_pass
+      - VRS_CULTURE=de-DE #see http://msdn.microsoft.com/en-us/goglobal/bb896001.aspx for a list of supported culture names. Not all translations may be available
+      - VRS_DB_UPDATE_BACKUP_UNCOMPRESSED=yes # default unset / compressed
+      - VRS_DB_UPDATE_POLICY_FULLAUTO=yes # default unset / no
+      - VRS_DB_UPDATE_WITH_VACUUM=yes # default unset / no
+      - 'VRS_ENHANCED_LAYERS_CONFIG={
+
+          /* Map Options */
+          "defaultMap" : 1,                      /* 1: OpenStreetMap, 2: OpenStreetMap Dark, 3: OpenTopoMap, 4: WaterColour, 5: CartoDark, 6: Terrain, 7: Satellite */
+          "layerMenuPosition" : "bottomleft",    /* Valid positions: topleft, topright, bottomleft or bottomright */
+
+          /* Enable Layers */
+          "airspace" : 0,
+          "navAids" : 0,
+          "reportingPoints" : 0,
+          "tfrUSA" : 0,
+          "seaMarkers" : 0,
+          "trainMap" : 0,
+          "clouds" : 0,
+          "rain" : 0,
+          "temps" : 0,
+          "wind" : 0,
+          "pressure" : 0,
+          "dayNight" : 0,
+          "civilAirfields" : 0,
+          "militaryAirfields" : 0,
+          "heliports" : 0,
+          "glidingSpots" : 0
+        }'
+      - VRS_ENHANCED_LAYERS_COUNTRY=UK # Currently available: UK,DE,USA1,SE
+      - VRS_ENHANCED_LAYERS_OPENAIP_APIKEY=yourapikey
+      - VRS_ENHANCED_LAYERS_OPENWX_APIKEY=yourapikey
+      - VRS_ENHANCED_MARKERS=normal # default unset
+      - VRS_SBSHOST=readsb  # put IP or container name of data source here
+      - VRS_SBSPORT=30003
     tmpfs:
-        - /tmp:rw,nosuid,nodev,noexec,relatime,size=128M
+      - /tmp:rw,nosuid,nodev,noexec,relatime,size=128M
     volumes:
-        - /opt/adsb/vrs:/root/.local/share/VirtualRadar
-        - "/etc/localtime:/etc/localtime:ro"
-        - "/etc/timezone:/etc/timezone:ro"
+      - /opt/adsb/vrs:/root/.local/share/VirtualRadar
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
 ```
 
 Virtual Radar server can be accessed at `http://<HOST_IP>:8085/VirtualRadar` VRS should auto default to desktop or mobile display depending on the type of device you are using to access it. You can force this by appending `/desktop.html` or `/mobile.html` to the web address give here.
@@ -77,15 +98,17 @@ The container image comes with the following preinstalled VRS V3 [plugins](https
 
 | Variable | Description | Default |
 |----------|-------------|---------|
+| `VRS_ADMIN_USERNAME` | Username used for login to WebAdmin | `required` |
+| `VRS_ADMIN_PASSWORD` | Password used for login to WebAdmin | `required` |
+| `VRS_CULTURE` | see [here](http://msdn.microsoft.com/en-us/goglobal/bb896001.aspx) for a list of supported culture names. Not all translations may be available | `unset` means `en-GB` |
+| `VRS_DB_UPDATE_BACKUP_UNCOMPRESSED` | Works only in conjunction with `VRS_DB_UPDATE_POLICY_FULLAUTO`. Prior the update a backup of the database is created. If this is set, the backup will remain uncompressed | `unset` |
 | `VRS_DB_UPDATE_POLICY_FULLAUTO` | Activates the initial download of an extended Basestation.sqb DB and keeps it up to date. Warning! This may overwrite user entries | `unset` |
 | `VRS_DB_UPDATE_WITH_VACUUM` | Works only in conjunction with `VRS_DB_UPDATE_POLICY_FULLAUTO`. DB is compressed after update. The update takes longer but the sqb will be smaller.| `unset` |
-| `VRS_DB_UPDATE_BACKUP_UNCOMPRESSED` | Works only in conjunction with `VRS_DB_UPDATE_POLICY_FULLAUTO`. Prior the update a backup of the database is created. If this is set, the backup will remain uncompressed | `unset` |
-| `VRS_CULTURE` | see [here](http://msdn.microsoft.com/en-us/goglobal/bb896001.aspx) for a list of supported culture names. Not all translations may be available | `unset` means `en-GB` |
-| `VRS_ENHANCED_MARKERS` | Installs and activates VRS custom markers. `normal` is for the ADS-B set, `hfdl` is for an extra set in case you have a HFDL input and `disable` deactivates the markers. [here](https://github.com/rikgale/VRSCustomMarkers) are more details about the markers. | `unset` |
+| `VRS_ENHANCED_LAYERS_CONFIG` | The configuration for the default map, enabled layers and menu buttom position. See the docker-compose.yml example above! | `unset` defaults to example values |
 | `VRS_ENHANCED_LAYERS_COUNTRY` | Installs and activates VRS enhanced layers. Takes a country code as input. Currently availble are `UK`, `DE`, `USA1`, `SE`. [here](https://github.com/rikgale/VRSCustomLayers) are more details, feel free to open an issue there to get your country on board. | `unset` - Unknown country codes will default to UK |
-| `VRS_ENHANCED_LAYERS_DEFAULT_MAP` | The number of the map to set as default from: 1: OpenStreetMap, 2: OpenStreetMap Dark, 3: OpenTopoMap, 4: WaterColour, 5: CartoDark, 6: Terrain, 7: Satellite | `unset/invalid` - Defaults to OpenStreetMap |
-| `VRS_ENHANCED_LAYERS_OPENWX_APIKEY` | For the enhanced weather layers to work, you need an API key. Again, [here](https://github.com/rikgale/VRSCustomLayers) are more details, and instructions how to obtain an API key. | `unset` |
 | `VRS_ENHANCED_LAYERS_OPENAIP_APIKEY` | For the OpenAIP layers to work, you need an API key. Again, [here](https://github.com/rikgale/VRSCustomLayers) are more details, and instructions how to obtain an API key. | `unset` |
+| `VRS_ENHANCED_LAYERS_OPENWX_APIKEY` | For the enhanced weather layers to work, you need an API key. Again, [here](https://github.com/rikgale/VRSCustomLayers) are more details, and instructions how to obtain an API key. | `unset` |
+| `VRS_ENHANCED_MARKERS` | Installs and activates VRS custom markers. `normal` is for the ADS-B set, `hfdl` is for an extra set in case you have a HFDL input and `disable` deactivates the markers. [here](https://github.com/rikgale/VRSCustomMarkers) are more details about the markers. | `unset` |
 | `VRS_SBSHOST` | IP or hostname of a BaseStation ADS-B data feed provider. In general it's more easy to set up the receivers on the WebAdmin panel | `unset` defaults to `readsb` |
 | `VRS_SBSPORT` | Port the BaseStation ADS-B data feed provider | `unset` defaults to `30003` |
 
