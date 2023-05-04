@@ -24,7 +24,6 @@ services:
           /* Enable Layers */
           "airspace" : 0,
           "navAids" : 0,
-          "reportingPoints" : 0,
           "tfrUSA" : 0,
           "seaMarkers" : 0,
           "trainMap" : 0,
