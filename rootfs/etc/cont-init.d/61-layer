@@ -81,7 +81,7 @@ if [[ -n "${VRS_ENHANCED_LAYERS_COUNTRY}" ]]
                     echo "[$APPNAME][$(date)] Enhanced Layers API Keys config injection - Failure"
                 fi
             fi
-            if [[ -n "${VRS_ENHANCED_LAYERS_DEFAULT_MAP}" ]]
+            if [[ -n "${VRS_ENHANCED_LAYERS_CONFIG}" ]]
               then
                 #shellcheck disable=SC2001
                 sed -i "s|##EXTERNALCONFIG##|$(sed -e 's|/\*[^*]*\*/||g' <<< "${VRS_ENHANCED_LAYERS_CONFIG//[[:space:]]/}")|g" "${VRS_EXTENSION_DIR}"/EndOfBody.html
