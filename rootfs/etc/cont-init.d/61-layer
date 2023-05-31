@@ -48,8 +48,14 @@ if [[ -n "${VRS_ENHANCED_LAYERS_COUNTRY}" ]]
               (usa1) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
                 rename -f 's/USA1//' -- *.geojson
                 ;;
+              (usaaz) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
+                rename -f 's/USAAZ//' -- *.geojson
+                ;;
               (se) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
                 rename -f 's/SE//' -- *.geojson
+                ;;
+              (au) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
+                rename -f 's/AU//' -- *.geojson
                 ;;
               (*) echo "[$APPNAME][$(date)] Unknown or wrong country, default set to UK"
                 ;;
@@ -75,9 +81,10 @@ if [[ -n "${VRS_ENHANCED_LAYERS_COUNTRY}" ]]
                     echo "[$APPNAME][$(date)] Enhanced Layers API Keys config injection - Failure"
                 fi
             fi
-            if [[ -n "${VRS_ENHANCED_LAYERS_DEFAULT_MAP}" ]]
+            if [[ -n "${VRS_ENHANCED_LAYERS_CONFIG}" ]]
               then
-                sed -i -e "s/##DEFAULTMAP##/${VRS_ENHANCED_LAYERS_DEFAULT_MAP}/g" ${VRS_EXTENSION_DIR}/EndOfBody.html
+                #shellcheck disable=SC2001
+                sed -i "s|##EXTERNALCONFIG##|$(sed -e 's|/\*[^*]*\*/||g' <<< "${VRS_ENHANCED_LAYERS_CONFIG//[[:space:]]/}")|g" "${VRS_EXTENSION_DIR}"/EndOfBody.html
             fi
         else        
           echo "[$APPNAME][$(date)] Enhanced Layers archive download and uncompress - Failure"
