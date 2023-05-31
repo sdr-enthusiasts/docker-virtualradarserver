@@ -1,5 +1,5 @@
 #!/usr/bin/with-contenv bash
-#shellcheck shell=bash
+#shellcheck shell=bash disable=SC2128
 
 APPNAME="$(hostname)/autoupdate"
 VRS_CONFIG_DIR="/root/.local/share/VirtualRadar"
