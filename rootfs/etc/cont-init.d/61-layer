@@ -6,6 +6,15 @@ APPNAME="$(hostname)/vrs-cclayer"
 VRS_CONFIG_DIR="/root/.local/share/VirtualRadar"
 VRS_EXTENSION_DIR="/root/.local/share/VirtualRadar/CustomContent/CustomInjectedFiles"
 
+#let's do a basic functionality check first. Is github reachable? If not, we bail out
+if curl --fail -s github.com
+  then
+    echo "[$APPNAME][$(date)] Github is reachable. Continue..."
+    exit
+  else
+    echo "[$APPNAME][$(date)] I can't reach github. Check your internet connection / DNS Setting. Exiting."
+fi
+
 #PluginConfig Settings (escaped)
 LAYER_EOB_DISABLED="%3cInjectSettings%3e%0a++++++%3cEnabled%3efalse%3c%2fEnabled%3e%0a++++++%3cPathAndFile%3e\*%3c%2fPathAndFile%3e%0a++++++%3cInjectionLocation%3eBody%3c%2fInjectionLocation%3e%0a++++++%3cStart%3efalse%3c%2fStart%3e%0a++++++%3cFile%3e%2froot%2f\.local%2fshare%2fVirtualRadar%2fCustomContent%2fCustomInjectedFiles%2fEndOfBody\.html%3c%2fFile%3e%0a++++%3c%2fInjectSettings%3e%0a"
 LAYER_EOB_ENABLED="%3cInjectSettings%3e%0a++++++%3cEnabled%3etrue%3c%2fEnabled%3e%0a++++++%3cPathAndFile%3e\*%3c%2fPathAndFile%3e%0a++++++%3cInjectionLocation%3eBody%3c%2fInjectionLocation%3e%0a++++++%3cStart%3efalse%3c%2fStart%3e%0a++++++%3cFile%3e%2froot%2f\.local%2fshare%2fVirtualRadar%2fCustomContent%2fCustomInjectedFiles%2fEndOfBody\.html%3c%2fFile%3e%0a++++%3c%2fInjectSettings%3e%0a"
