@@ -14,7 +14,7 @@ VRS_EXTENSION_DIR="/root/.local/share/VirtualRadar/CustomContent/CustomInjectedF
 FLAGSDB_LINK="https://github.com/rikgale/VRSData/raw/main/BaseStation.zip"
 
 #max runtime in seconds for VRS init
-MAXTIME=15
+MAXTIME=20
 
 #helper files for updatechecks
 ACTUALFILE="$VRS_CONFIG_DIR/commitid"
