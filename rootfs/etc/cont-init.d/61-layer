@@ -10,9 +10,9 @@ VRS_EXTENSION_DIR="/root/.local/share/VirtualRadar/CustomContent/CustomInjectedF
 if curl --fail -s github.com
   then
     echo "[$APPNAME][$(date)] Github is reachable. Continue..."
-    exit
   else
     echo "[$APPNAME][$(date)] I can't reach github. Check your internet connection / DNS Setting. Exiting."
+    exit
 fi
 
 #PluginConfig Settings (escaped)
