@@ -84,7 +84,7 @@ if [[ -n "${VRS_ENHANCED_LAYERS_COUNTRY}" ]]
               else
                 if sed -i -e "s/##OPENWXAPIKEY##/${VRS_ENHANCED_LAYERS_OPENWX_APIKEY}/g" ${VRS_EXTENSION_DIR}/EndOfBody.html &&\
                   sed -i -e "s/##OPENAIPKEY##/${VRS_ENHANCED_LAYERS_OPENAIP_APIKEY}/g" ${VRS_EXTENSION_DIR}/EndOfBody.html &&\
-                  sed -i -e "s/##THUNDERFORESTKEY##/${VRS_ENHANCED_LAYERS_THUNDERFOREST_APIKEY}/g" ${VRS_EXTENSION_DIR}/EndOfBody.html &&
+                  sed -i -e "s/##THUNDERFORESTKEY##/${VRS_ENHANCED_LAYERS_THUNDERFOREST_APIKEY}/g" ${VRS_EXTENSION_DIR}/EndOfBody.html
                   then
                     echo "[$APPNAME][$(date)] Enhanced Layers API Keys config injection - OK"
                   else
