@@ -106,7 +106,7 @@ jobs:
           context: .
           file: ./Dockerfile
           no-cache: true
-          platforms: linux/amd64,linux/arm/v7,linux/arm64,linux/i386
+          platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: true
           tags: ghcr.io/${{ env.GHCR_IMAGE }}:${{ env.GHCR_TAG }}
           labels: ${{ steps.meta.outputs.labels }}
