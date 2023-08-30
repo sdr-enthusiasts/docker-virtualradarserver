@@ -11,7 +11,7 @@ RUN set -x && \
     KEPT_PACKAGES+=(rename) && \
     KEPT_PACKAGES+=(mono-complete) && \
     # added for debugging
-    KEPT_PACKAGES+=(nano netcat) && \
+    KEPT_PACKAGES+=(nano netcat-openbsd) && \
 #
 # Install all these packages:
     apt-get update && \
