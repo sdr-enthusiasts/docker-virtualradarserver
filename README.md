@@ -67,6 +67,8 @@ services:
       - /etc/timezone:/etc/timezone:ro
 ```
 
+Refer to [VRSLayers](https://github.com/rikgale/VRSCustomLayers/tree/main#default-options) for further information about the defaults you can set in the docker-compose.yml
+
 Virtual Radar server can be accessed at `http://<HOST_IP>:8085/VirtualRadar` VRS should auto default to desktop or mobile display depending on the type of device you are using to access it. You can force this by appending `/desktop.html` or `/mobile.html` to the web address give here.
 
 The final configuration is done via the VRS Web Admin Interface, which can be found at `http://<HOST_IP>:8085/VirtualRadar/WebAdmin/Index.html`
