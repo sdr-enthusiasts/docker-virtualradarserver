@@ -13,7 +13,8 @@ RegisteredOwners, UserNotes, Interested, UserBool1, UserString1, UserString4, Us
 FullAircraft.ICAOTypeCode, FullAircraft.Type, FullAircraft.SerialNo, FullAircraft.RegisteredOwners, FullAircraft.UserNotes, FullAircraft.Interested, FullAircraft.UserBool1,
 FullAircraft.UserString1, FullAircraft.UserString4, FullAircraft.UserString5, FullAircraft.UserInt1, FullAircraft.UserInt3, FullAircraft.OperatorFlagCode 
 FROM FullAircraft WHERE FullAircraft.ModeS = Aircraft.ModeS)
-WHERE EXISTS (SELECT * FROM FullAircraft WHERE FullAircraft.ModeS = Aircraft.ModeS);
+WHERE EXISTS (SELECT * FROM FullAircraft WHERE FullAircraft.ModeS = Aircraft.ModeS)
+AND IFNULL(Aircraft.UserTag, '') = '';
 
 
 INSERT INTO Aircraft (FirstCreated, LastModified, ModeS, ModeSCountry, Country, Registration, Status, Manufacturer, ICAOTypeCode, Type, SerialNo, 
