@@ -1,0 +1,106 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+APPNAME="$(hostname)/vrs-cclayer"
+#VRS_DIR="/opt/vrs"
+VRS_CONFIG_DIR="/root/.local/share/VirtualRadar"
+VRS_EXTENSION_DIR="/root/.local/share/VirtualRadar/CustomContent/CustomInjectedFiles"
+
+#PluginConfig Settings (escaped)
+LAYER_EOB_DISABLED="%3cInjectSettings%3e%0a++++++%3cEnabled%3efalse%3c%2fEnabled%3e%0a++++++%3cPathAndFile%3e\*%3c%2fPathAndFile%3e%0a++++++%3cInjectionLocation%3eBody%3c%2fInjectionLocation%3e%0a++++++%3cStart%3efalse%3c%2fStart%3e%0a++++++%3cFile%3e%2froot%2f\.local%2fshare%2fVirtualRadar%2fCustomContent%2fCustomInjectedFiles%2fEndOfBody\.html%3c%2fFile%3e%0a++++%3c%2fInjectSettings%3e%0a"
+LAYER_EOB_ENABLED="%3cInjectSettings%3e%0a++++++%3cEnabled%3etrue%3c%2fEnabled%3e%0a++++++%3cPathAndFile%3e\*%3c%2fPathAndFile%3e%0a++++++%3cInjectionLocation%3eBody%3c%2fInjectionLocation%3e%0a++++++%3cStart%3efalse%3c%2fStart%3e%0a++++++%3cFile%3e%2froot%2f\.local%2fshare%2fVirtualRadar%2fCustomContent%2fCustomInjectedFiles%2fEndOfBody\.html%3c%2fFile%3e%0a++++%3c%2fInjectSettings%3e%0a"
+LAYER_EOH_DISABLED="%3cInjectSettings%3e%0a++++++%3cEnabled%3efalse%3c%2fEnabled%3e%0a++++++%3cPathAndFile%3e\*%3c%2fPathAndFile%3e%0a++++++%3cInjectionLocation%3eHead%3c%2fInjectionLocation%3e%0a++++++%3cStart%3efalse%3c%2fStart%3e%0a++++++%3cFile%3e%2froot%2f\.local%2fshare%2fVirtualRadar%2fCustomContent%2fCustomInjectedFiles%2fEndOfHead\.html%3c%2fFile%3e%0a++++%3c%2fInjectSettings%3e%0a"
+LAYER_EOH_ENABLED="%3cInjectSettings%3e%0a++++++%3cEnabled%3etrue%3c%2fEnabled%3e%0a++++++%3cPathAndFile%3e\*%3c%2fPathAndFile%3e%0a++++++%3cInjectionLocation%3eHead%3c%2fInjectionLocation%3e%0a++++++%3cStart%3efalse%3c%2fStart%3e%0a++++++%3cFile%3e%2froot%2f\.local%2fshare%2fVirtualRadar%2fCustomContent%2fCustomInjectedFiles%2fEndOfHead\.html%3c%2fFile%3e%0a++++%3c%2fInjectSettings%3e%0a"
+LAYER_SCALE_DISABLED="%3cInjectSettings%3e%0a++++++%3cEnabled%3efalse%3c%2fEnabled%3e%0a++++++%3cPathAndFile%3e%2fdesktop\.html%3c%2fPathAndFile%3e%0a++++++%3cInjectionLocation%3eBody%3c%2fInjectionLocation%3e%0a++++++%3cStart%3efalse%3c%2fStart%3e%0a++++++%3cFile%3e%2froot%2f\.local%2fshare%2fVirtualRadar%2fCustomContent%2fCustomInjectedFiles%2fScale\.html%3c%2fFile%3e%0a++++%3c%2fInjectSettings%3e%0a"
+LAYER_SCALE_ENABLED="%3cInjectSettings%3e%0a++++++%3cEnabled%3etrue%3c%2fEnabled%3e%0a++++++%3cPathAndFile%3e%2fdesktop\.html%3c%2fPathAndFile%3e%0a++++++%3cInjectionLocation%3eBody%3c%2fInjectionLocation%3e%0a++++++%3cStart%3efalse%3c%2fStart%3e%0a++++++%3cFile%3e%2froot%2f\.local%2fshare%2fVirtualRadar%2fCustomContent%2fCustomInjectedFiles%2fScale\.html%3c%2fFile%3e%0a++++%3c%2fInjectSettings%3e%0a"
+LAYER_FULLSCREEN_DISABLED="%3cInjectSettings%3e%0a++++++%3cEnabled%3efalse%3c%2fEnabled%3e%0a++++++%3cPathAndFile%3e%2fdesktop\.html%3c%2fPathAndFile%3e%0a++++++%3cInjectionLocation%3eBody%3c%2fInjectionLocation%3e%0a++++++%3cStart%3efalse%3c%2fStart%3e%0a++++++%3cFile%3e%2froot%2f\.local%2fshare%2fVirtualRadar%2fCustomContent%2fCustomInjectedFiles%2fFullScreen\.html%3c%2fFile%3e%0a++++%3c%2fInjectSettings%3e%0a"
+LAYER_FULLSCREEN_ENABLED="%3cInjectSettings%3e%0a++++++%3cEnabled%3etrue%3c%2fEnabled%3e%0a++++++%3cPathAndFile%3e%2fdesktop\.html%3c%2fPathAndFile%3e%0a++++++%3cInjectionLocation%3eBody%3c%2fInjectionLocation%3e%0a++++++%3cStart%3efalse%3c%2fStart%3e%0a++++++%3cFile%3e%2froot%2f\.local%2fshare%2fVirtualRadar%2fCustomContent%2fCustomInjectedFiles%2fFullScreen\.html%3c%2fFile%3e%0a++++%3c%2fInjectSettings%3e%0a"
+
+#Downloadlinks
+EXT_LAYERS_LINK="https://github.com/rikgale/VRSCustomLayers/raw/main/VRSCustomLayers.zip"
+
+echo "[$APPNAME][$(date)] Starting CustomContent Layers script..."
+
+#Create the directory in case it's not there
+[ -d "${VRS_EXTENSION_DIR}" ] && mkdir -p "${VRS_CONFIG_DIR}/CustomContent/CustomInjectedFiles"
+
+if [[ -n "${VRS_ENHANCED_LAYERS_COUNTRY}" ]]
+  then
+    #cleaning up first
+    cd "${VRS_EXTENSION_DIR}" || exit
+    rm "${VRS_CONFIG_DIR}/CustomContent/CustomInjectedFiles"/*.geojson
+    echo "[$APPNAME][$(date)] Downloading and installing Enhanced Layers"
+      if curl --fail --compressed -s -L -o "${VRS_EXTENSION_DIR}/enhancedlayers.zip" ${EXT_LAYERS_LINK} &&\
+          unzip -q -o "${VRS_EXTENSION_DIR}/enhancedlayers.zip" &&\
+          rm "${VRS_EXTENSION_DIR}/enhancedlayers.zip" &&\
+          cp -r "${VRS_EXTENSION_DIR}"/VRSCustomLayers/* "${VRS_EXTENSION_DIR}" &&\
+          cp -r "${VRS_EXTENSION_DIR}"/'Put these files in VRS root folder'/* "${VRS_EXTENSION_DIR}" &&\
+          rm -r 'Put these files in VRS root folder'
+        then
+          echo "[$APPNAME][$(date)] Enhanced Layers archive download and uncompress - OK"
+            case "${VRS_ENHANCED_LAYERS_COUNTRY,,}" in
+              (uk) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
+                rename -f 's/UK//' -- *.geojson
+                ;;
+              (de) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
+                rename -f 's/DE//' -- *.geojson
+                ;;
+              (usa1) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
+                rename -f 's/USA1//' -- *.geojson
+                ;;
+              (usaaz) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
+                rename -f 's/USAAZ//' -- *.geojson
+                ;;
+              (se) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
+                rename -f 's/SE//' -- *.geojson
+                ;;
+              (au) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
+                rename -f 's/AU//' -- *.geojson
+                ;;
+              (*) echo "[$APPNAME][$(date)] Unknown or wrong country, default set to UK"
+                ;;
+            esac
+              if sed -i -e "s/$LAYER_EOB_DISABLED/$LAYER_EOB_ENABLED/g" ${VRS_CONFIG_DIR}/PluginsConfiguration.txt &&\
+                  sed -i -e "s/$LAYER_EOH_DISABLED/$LAYER_EOH_ENABLED/g" ${VRS_CONFIG_DIR}/PluginsConfiguration.txt &&\
+                  sed -i -e "s/$LAYER_SCALE_DISABLED/$LAYER_SCALE_ENABLED/g" ${VRS_CONFIG_DIR}/PluginsConfiguration.txt &&\
+                  sed -i -e "s/$LAYER_FULLSCREEN_DISABLED/$LAYER_FULLSCREEN_ENABLED/g" ${VRS_CONFIG_DIR}/PluginsConfiguration.txt
+                then
+                  echo "[$APPNAME][$(date)] Enhanced Layers config enabled - OK"
+                else
+                  echo "[$APPNAME][$(date)] Enhanced Layers config enabled - Failure"
+              fi
+            if ! [[ -n "${VRS_ENHANCED_LAYERS_OPENAIP_APIKEY}" || "${VRS_ENHANCED_LAYERS_OPENWX_APIKEY}" ]]
+              then
+                echo "[$APPNAME][$(date)] VRS_ENHANCED_LAYERS_OPENAIP_APIKEY and VRS_ENHANCED_LAYERS_OPENWX_APIKEY not set. Expect those layers not to work."
+              else
+                if sed -i -e "s/##OPENWXAPIKEY##/${VRS_ENHANCED_LAYERS_OPENWX_APIKEY}/g" ${VRS_EXTENSION_DIR}/EndOfBody.html &&\
+                  sed -i -e "s/##OPENAIPKEY##/${VRS_ENHANCED_LAYERS_OPENAIP_APIKEY}/g" ${VRS_EXTENSION_DIR}/EndOfBody.html
+                  then
+                    echo "[$APPNAME][$(date)] Enhanced Layers API Keys config injection - OK"
+                  else
+                    echo "[$APPNAME][$(date)] Enhanced Layers API Keys config injection - Failure"
+                fi
+            fi
+            if [[ -n "${VRS_ENHANCED_LAYERS_CONFIG}" ]]
+              then
+                #shellcheck disable=SC2001
+                sed -i "s|##EXTERNALCONFIG##|$(sed -e 's|/\*[^*]*\*/||g' <<< "${VRS_ENHANCED_LAYERS_CONFIG//[[:space:]]/}")|g" "${VRS_EXTENSION_DIR}"/EndOfBody.html
+            fi
+        else        
+          echo "[$APPNAME][$(date)] Enhanced Layers archive download and uncompress - Failure"
+      fi
+  else
+    echo "[$APPNAME][$(date)] Enhanced Layers not set in the yaml. Exiting."
+      if sed -i -e "s/$LAYER_EOB_ENABLED/$LAYER_EOB_DISABLED/g" ${VRS_CONFIG_DIR}/PluginsConfiguration.txt &&\
+          sed -i -e "s/$LAYER_EOH_ENABLED/$LAYER_EOH_DISABLED/g" ${VRS_CONFIG_DIR}/PluginsConfiguration.txt &&\
+          sed -i -e "s/$LAYER_SCALE_ENABLED/$LAYER_SCALE_DISABLED/g" ${VRS_CONFIG_DIR}/PluginsConfiguration.txt &&\
+          sed -i -e "s/$LAYER_FULLSCREEN_ENABLED/$LAYER_FULLSCREEN_DISABLED/g" ${VRS_CONFIG_DIR}/PluginsConfiguration.txt
+        then
+          echo "[$APPNAME][$(date)] Enhanced Layers config enabled - OK"
+        else
+          echo "[$APPNAME][$(date)] Enhanced Layers config enabled - Failure"
+      fi
+    exit 0
+fi
+#cleanup and exit
+exit 0
