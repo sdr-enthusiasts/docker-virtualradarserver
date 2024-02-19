@@ -57,6 +57,21 @@ if [[ -n "${VRS_ENHANCED_LAYERS_COUNTRY}" ]]
               (au) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
                 rename -f 's/AU//' -- *.geojson
                 ;;
+              (in) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
+                rename -f 's/IN//' -- *.geojson
+                ;;
+              (id) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
+                rename -f 's/ID//' -- *.geojson
+                ;;
+              (nl) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
+                rename -f 's/NL//' -- *.geojson
+                ;;
+              (fr) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
+                rename -f 's/FR//' -- *.geojson
+                ;;
+              (es) echo "[$APPNAME][$(date)] Enhanced Layers renaming country files for: ${VRS_ENHANCED_LAYERS_COUNTRY}"
+                rename -f 's/ES//' -- *.geojson
+                ;;
               (*) echo "[$APPNAME][$(date)] Unknown or wrong country, default set to UK"
                 ;;
             esac
