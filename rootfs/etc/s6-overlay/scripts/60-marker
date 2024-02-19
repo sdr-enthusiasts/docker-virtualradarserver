@@ -1,0 +1,77 @@
+#!/command/with-contenv bash
+# shellcheck shell=bash
+
+APPNAME="$(hostname)/vrs-ccmarker"
+#VRS_DIR="/opt/vrs"
+VRS_CONFIG_DIR="/root/.local/share/VirtualRadar"
+VRS_EXTENSION_DIR="/root/.local/share/VirtualRadar/CustomContent/CustomInjectedFiles"
+
+#PluginConfig Settings (escaped)
+CCMARKER_DISABLED="%3cInjectSettings%3e%0a++++%3cInjectSettings%3e%0a++++++%3cEnabled%3efalse%3c%2fEnabled%3e%0a++++++%3cPathAndFile%3e\*%3c%2fPathAndFile%3e%0a++++++%3cInjectionLocation%3eBody%3c%2fInjectionLocation%3e%0a++++++%3cStart%3etrue%3c%2fStart%3e%0a++++++%3cFile%3e%2froot%2f\.local%2fshare%2fVirtualRadar%2fCustomContent%2fCustomInjectedFiles%2fMyMarkers1\.html%3c%2fFile%3e%0a++++%3c%2fInjectSettings%3e%0a"
+CCMARKER_ENABLED="%3cInjectSettings%3e%0a++++%3cInjectSettings%3e%0a++++++%3cEnabled%3etrue%3c%2fEnabled%3e%0a++++++%3cPathAndFile%3e\*%3c%2fPathAndFile%3e%0a++++++%3cInjectionLocation%3eBody%3c%2fInjectionLocation%3e%0a++++++%3cStart%3etrue%3c%2fStart%3e%0a++++++%3cFile%3e%2froot%2f\.local%2fshare%2fVirtualRadar%2fCustomContent%2fCustomInjectedFiles%2fMyMarkers1\.html%3c%2fFile%3e%0a++++%3c%2fInjectSettings%3e%0a"
+
+#Downloadlinks
+EXT_MARKERS_LINK="https://raw.githubusercontent.com/rikgale/VRSCustomMarkers/main/MyMarkers1.html"
+EXT_HFDLMARKERS_LINK="https://raw.githubusercontent.com/rikgale/VRSCustomMarkers/main/MyMarkers1HFDL.html"
+
+echo "[$APPNAME][$(date)] Starting CustomContent Markers script..."
+
+#Create the directory in case it's not there
+mkdir -p "${VRS_CONFIG_DIR}/CustomContent/CustomInjectedFiles"
+
+if [[ -n "${VRS_ENHANCED_MARKERS}" ]]
+  then
+    echo "[$APPNAME][$(date)] Downloading and installing Custom Markers"
+      #normal markers
+      if [[ "${VRS_ENHANCED_MARKERS}" == "normal" ]]
+        then
+          echo "[$APPNAME][$(date)] Normal Custom markers"
+            if curl --fail -s -L -o "${VRS_EXTENSION_DIR}/MyMarkers1.html" ${EXT_MARKERS_LINK}
+              then
+                echo "[$APPNAME][$(date)] Normal Custom marker file download - OK"
+                echo "[$APPNAME][$(date)] Injecting custom marker config into PluginsConfiguration.txt"
+                  if sed -i -e "s/$CCMARKER_DISABLED/$CCMARKER_ENABLED/g" ${VRS_CONFIG_DIR}/PluginsConfiguration.txt
+                    then
+                      echo "[$APPNAME][$(date)] Custom marker config enabled - OK"
+                    else
+                      echo "[$APPNAME][$(date)] Custom marker config enabled - Failure"
+                  fi
+              else
+                echo "[$APPNAME][$(date)] Normal Custom marker file download - Failure"
+            fi
+      #HFDL markers
+      elif [[ "${VRS_ENHANCED_MARKERS}" == "HFDL" ]] || [[ "${VRS_ENHANCED_MARKERS}" == "hfdl" ]]
+          then
+            echo "[$APPNAME][$(date)] HFDL Custom markers"
+              if curl --fail -s -L -o "${VRS_EXTENSION_DIR}/MyMarkers1.html" ${EXT_HFDLMARKERS_LINK}
+                then
+                  echo "[$APPNAME][$(date)] HFDL Custom marker file download - OK"
+                  echo "[$APPNAME][$(date)] Injecting custom marker config into PluginsConfiguration.txt"
+                    if sed -i -e "s/$CCMARKER_DISABLED/$CCMARKER_ENABLED/g" ${VRS_CONFIG_DIR}/PluginsConfiguration.txt
+                      then
+                        echo "[$APPNAME][$(date)] Custom marker config enabled - OK"
+                      else
+                        echo "[$APPNAME][$(date)] Custom marker config enabled - Failure"
+                    fi
+                  else
+                    echo "[$APPNAME][$(date)] HFDL Custom marker file download - Failure"
+              fi
+      #disabled        
+      elif [[ "${VRS_ENHANCED_MARKERS}" == "disabled" ]] || [[ "${VRS_ENHANCED_MARKERS}" == "false" ]]
+          then
+            echo "[$APPNAME][$(date)] HFDL Custom markers disabled"
+              if sed -i -e "s/$CCMARKER_ENABLED/$CCMARKER_DISABLED/g" ${VRS_CONFIG_DIR}/PluginsConfiguration.txt
+                then
+                  echo "[$APPNAME][$(date)] Custom marker config disabled - OK"
+                else
+                  echo "[$APPNAME][$(date)] Custom marker config disabled - Failure"
+              fi
+      
+        else echo "[$APPNAME][$(date)] yaml setting unkown. Check readme."
+      fi
+  else
+    echo "[$APPNAME][$(date)] Custom Markers not enabled"
+fi
+
+#cleanup and exit
+exit 0

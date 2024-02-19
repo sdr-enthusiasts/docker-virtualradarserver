@@ -1,0 +1,19 @@
+#!/command/with-contenv bash
+#shellcheck shell=bash disable=SC2015
+
+APPNAME="$(hostname)/vrs-runtime"
+VRS_DIR="/opt/vrs"
+VRS_EXEC="mono VirtualRadar.exe"
+VRS_CMDLINE=()
+VRS_CMDLINE+=("-nogui")
+[[ -n "${VRS_CULTURE}" ]] && VRS_CMDLINE+=("-culture:${VRS_CULTURE}") || true
+
+# start VRS and keep it in the foreground:
+cd "${VRS_DIR}" || exit
+echo "[$APPNAME][$(date)] Starting ${VRS_DIR}/${VRS_EXEC} ${VRS_CMDLINE[*]}"
+#exec ${VRS_EXEC} ${VRS_CMDLINE[@]} | stdbuf -o0 awk -v label=${APPNAME} '{print "[" label "][" strftime("%F %T%z", systime()) "] " $0}'
+exec ${VRS_EXEC} "${VRS_CMDLINE[@]}"
+
+#by wiedehopf. Trying to fix the s6-svc pipe trouble
+#trap 'kill 0' TERM
+#( ${VRS_EXEC} ${VRS_CMDLINE[@]} | stdbuf -o0 awk -v label=${APPNAME} '{print "[" label "][" strftime("%F %T%z", systime()) "] " $0}' )

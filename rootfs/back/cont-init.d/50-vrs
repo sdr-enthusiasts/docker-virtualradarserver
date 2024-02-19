@@ -1,0 +1,129 @@
+#!/usr/bin/with-contenv bash
+#shellcheck shell=bash disable=SC2034,SC2164,SC2015
+
+APPNAME="$(hostname)/vrs-init"
+VRS_DIR="/opt/vrs"
+VRS_EXEC="mono VirtualRadar.exe"
+VRS_CMDLINE=()
+VRS_CMDLINE+=("-nogui")
+VRS_CMDLINE+=("-createAdmin:${VRS_ADMIN_USERNAME}")
+VRS_CMDLINE+=("-password:${VRS_ADMIN_PASSWORD}")
+VRS_CONFIG_DIR="/root/.local/share/VirtualRadar"
+VRS_EXTENSION_DIR="/root/.local/share/VirtualRadar/CustomContent/CustomInjectedFiles"
+#Silhouettes, OpFlags and DB
+FLAGSDB_LINK="https://github.com/rikgale/VRSData/raw/main/BaseStation.zip"
+
+#max runtime in seconds for VRS init
+MAXTIME=15
+
+#helper files for updatechecks
+ACTUALFILE="$VRS_CONFIG_DIR/commitid"
+ACTUALFILE_CM="$VRS_CONFIG_DIR/commitid_cm"
+ACTUALFILE_SQB="$VRS_CONFIG_DIR/commitid_sqb"
+
+#We need that for the update-after-fresh-install prevention
+WHICHREPO_SQB="https://api.github.com/repos/rikgale/VRSData/branches"
+WHICHBRANCH_SQB="main"
+
+#if the helper file to store the commit ID isn't there, create it empty
+touch $ACTUALFILE
+#and the same for the custom markers
+touch $ACTUALFILE_CM
+#for the database
+touch $ACTUALFILE_SQB
+
+#debugging stuff
+#echo $ACTUAL
+#echo $PROBE
+BUILD_DATE=$(cat "${VRS_DIR}"/builddate)
+
+echo "[$APPNAME][$(date)] Initializing Virtual Radar Server, build ${BUILD_DATE}..."
+
+mkdir -p "${VRS_CONFIG_DIR}/flags"
+mkdir -p "${VRS_CONFIG_DIR}/silhouettes"
+mkdir -p "${VRS_CONFIG_DIR}/photos"
+mkdir -p "${VRS_CONFIG_DIR}/db"
+mkdir -p "${VRS_CONFIG_DIR}/CustomContent/CustomInjectedFiles"
+
+#download and install pre-filled DB for operator flags. As this should only happen once, no commit id check needed
+if [ ! -e "${VRS_CONFIG_DIR}/db/BaseStation.sqb" ]
+then
+  echo "[$APPNAME][$(date)] Downloading database for Operator Flags"
+  if curl --fail --compressed -s -L -o "${VRS_CONFIG_DIR}/BaseStation.zip" ${FLAGSDB_LINK} && unzip -qq -o -d "${VRS_CONFIG_DIR}/db" "${VRS_CONFIG_DIR}/BaseStation.zip"
+  then
+    echo "[$APPNAME][$(date)] Database for Operator Flags installed successfully"
+    #that should prevent a DB update right after a fresh download
+    PROBE_SQB=$(curl -sH "Accept: application/vnd.github.v3+json" $WHICHREPO_SQB | awk  "c&&!--c;/$WHICHBRANCH_SQB/{c=2}" | awk '/"sha"/ { print $2}' | sed 's/"//g;s/.$//g')
+    echo "$PROBE_SQB" > $ACTUALFILE_SQB
+    echo "[$APPNAME][$(date)] Updated $ACTUALFILE_SQB to commit ID $PROBE_SQB"
+  else
+    echo "[$APPNAME][$(date)] Database for Operator Flags not installed - failure"
+  fi
+else
+    echo "[$APPNAME][$(date)] Found an existing DB in $VRS_CONFIG_DIR, not touching anything!"
+fi
+
+#copy PluginsConfig into place if it's not there
+if [ ! -e "${VRS_CONFIG_DIR}/PluginsConfiguration.txt" ]
+  then
+    echo "[$APPNAME][$(date)] PluginsConfiguration.txt not found, adding template"
+      if cp -f /opt/vrs/PluginsConfiguration.txt "${VRS_CONFIG_DIR}/PluginsConfiguration.txt"
+        then
+          echo "[$APPNAME][$(date)] PluginsConfiguration.txt not found, adding template - OK"
+        else
+          echo "[$APPNAME][$(date)] PluginsConfiguration.txt not found, adding template - Failure"
+      fi  
+  else
+    echo "[$APPNAME][$(date)] PluginsConfiguration.txt found, not touching anything"
+fi
+
+# Starting VRS temporarily to create a username and password if none exist
+# If VRS has been initialized previously this step will be skipped.
+# If it hasn't, a username / password and a bunch of other files will be created...
+#    ...and VRS will actually stay up and run. We will shut it down after a max runtime of $MAXTIME secs.
+if [ ! -e "${VRS_CONFIG_DIR}/Configuration.xml" ]
+then
+  echo "[$APPNAME][$(date)] No Configuration.xml found, doing first run initialization."
+  cd "${VRS_DIR}"
+  # shellcheck disable=SC2068,SC2086
+  timeout "$MAXTIME" exec ${VRS_EXEC} ${VRS_CMDLINE[@]} #>/dev/null 2>&1
+  echo "[$APPNAME][$(date)] Virtual Radar Server has been initialized."
+else
+  echo "[$APPNAME][$(date)] Configuration.xml found, skipping initialization."
+fi
+
+# Replace 127.0.0.1 With ReadSB
+sed -i "s#<Address>127.0.0.1</Address>#<Address>${VRS_SBSHOST:-readsb}</Address>#g" "${VRS_CONFIG_DIR}/Configuration.xml"
+sed -i "s#<Port>30003</Port>#<Port>${VRS_SBSPORT:-30003}</Port>#g" "${VRS_CONFIG_DIR}/Configuration.xml"
+
+#Injecting settings for silhouettes, OpFlags and DB into Configuration.xml
+if ! grep -q "<DatabaseFileName>" "${VRS_CONFIG_DIR}/Configuration.xml"
+then
+  sed -i "/^  <BaseStationSettings>.*/a \    \<DatabaseFileName>/root/.local/share/VirtualRadar/db/BaseStation.sqb</DatabaseFileName>" "${VRS_CONFIG_DIR}/Configuration.xml"
+  echo "[$APPNAME][$(date)] Added database filename to Configuration.xml"
+else
+  echo "[$APPNAME][$(date)] DatabaseFileName found, not touching config."
+fi
+
+if ! grep -q "<OperatorFlagsFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
+then
+  sed -i "/^  <BaseStationSettings>.*/a \    \<OperatorFlagsFolder>/root/.local/share/VirtualRadar/flags</OperatorFlagsFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
+  echo "[$APPNAME][$(date)] Added Operator Flags folder to Configuration.xml"
+else
+  echo "[$APPNAME][$(date)] OperatorFlagsFolder found, not touching config."
+fi
+
+if ! grep -q "<SilhouettesFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
+then
+  sed -i "/^  <BaseStationSettings>.*/a \    \<SilhouettesFolder>/root/.local/share/VirtualRadar/silhouettes</SilhouettesFolder>" "${VRS_CONFIG_DIR}/Configuration.xml"
+  echo "[$APPNAME][$(date)] Added Silhouettes folder to Configuration.xml"
+else
+  echo "[$APPNAME][$(date)] SilhouettesFolder found, not touching config."
+fi
+
+#cleanup and exit
+[[ -f "${VRS_CONFIG_DIR}/BaseStation.zip" ]] && rm -f "${VRS_CONFIG_DIR}/BaseStation.zip" || true
+echo "[$APPNAME][$(date)] Cleaned up downloaded files."
+echo "[$APPNAME][$(date)] Finished basic configuration."
+
+exit 0
