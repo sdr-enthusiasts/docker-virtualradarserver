@@ -96,6 +96,30 @@ if [[ -n "${VRS_ENHANCED_LAYERS_COUNTRY}" ]]
                     echo "[$APPNAME][$(date)] Enhanced Layers API Keys config injection - Failure"
                 fi
             fi
+              if [[ -n "${VRS_ENHANCED_LAYERS_STADIA_APIKEY}" ]]
+                then
+                  echo "[$APPNAME][$(date)] Found Stadia APIkey - injecting"
+                   if sed -i -e "s/##STADIAKEY##/${VRS_ENHANCED_LAYERS_STADIA_APIKEY}/g" ${VRS_EXTENSION_DIR}/EndOfBody.html
+                     then
+                       echo "[$APPNAME][$(date)] Injecting Stadia APIkey - OK"
+                     else
+                       echo "[$APPNAME][$(date)] Injecting Stadia APIkey - Fail"
+                     fi
+                  else
+                    echo "[$APPNAME][$(date)] Stadia APIkey not set in yaml"
+              fi
+              if [[ -n "${VRS_ENHANCED_LAYERS_THUNDERFOREST_APIKEY}" ]]
+                then
+                  echo "[$APPNAME][$(date)] Found Thunderforest APIkey - injecting"
+                   if sed -i -e "s/##THUNDERFORESTKEY##/${VRS_ENHANCED_LAYERS_THUNDERFOREST_APIKEY}/g" ${VRS_EXTENSION_DIR}/EndOfBody.html
+                     then
+                       echo "[$APPNAME][$(date)] Injecting Thunderforest APIkey - OK"
+                     else
+                       echo "[$APPNAME][$(date)] Injecting Thunderforest APIkey - Fail"
+                     fi
+                  else
+                    echo "[$APPNAME][$(date)] Thunderforest APIkey not set in yaml"
+              fi
             if [[ -n "${VRS_ENHANCED_LAYERS_CONFIG}" ]]
               then
                 #shellcheck disable=SC2001
