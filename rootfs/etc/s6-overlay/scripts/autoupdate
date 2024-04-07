@@ -18,7 +18,7 @@ SILH_FILE="$VRS_CONFIG_DIR/silh"
 EXT_LOCALAC_LINK="https://raw.githubusercontent.com/rikgale/LocalAircraft/main/LocalAircraft.txt"
 #ExtraMarkers
 EXT_MARKERS_LINK="https://raw.githubusercontent.com/rikgale/VRSCustomMarkers/main/MyMarkers1.html"
-EXT_HFDLMARKERS_LINK="https://raw.githubusercontent.com/rikgale/VRSCustomMarkers/main/MyMarkers1HFDL.html"
+EXT_HFDLMARKERS_LINK="https://raw.githubusercontent.com/rikgale/VRSCustomMarkers/main/MyMarkers1.html"
 
 #sqb update link
 FULLAIRCRAFT_LINK="https://github.com/rikgale/VRSData/raw/main/FullAircraft.zip"
