@@ -12,7 +12,7 @@ CCMARKER_ENABLED="%3cInjectSettings%3e%0a++++%3cInjectSettings%3e%0a++++++%3cEna
 
 #Downloadlinks
 EXT_MARKERS_LINK="https://raw.githubusercontent.com/rikgale/VRSCustomMarkers/main/MyMarkers1.html"
-EXT_HFDLMARKERS_LINK="https://raw.githubusercontent.com/rikgale/VRSCustomMarkers/main/MyMarkers1HFDL.html"
+EXT_HFDLMARKERS_LINK="https://raw.githubusercontent.com/rikgale/VRSCustomMarkers/main/MyMarkers1.html"
 
 echo "[$APPNAME][$(date)] Starting CustomContent Markers script..."
 
