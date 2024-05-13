@@ -6,33 +6,32 @@ on:
     inputs:
       reason:
         required: false
-        description: 'Reason for running this workflow'
+        description: "Reason for running this workflow"
   push:
     branches:
       - v3p11
     # Don't trigger if it's just a documentation update
     paths-ignore:
-      - '**.md'
-      - '**.MD'
-      - '**.yml'
-      - 'LICENSE'
-      - '.gitattributes'
-      - '.gitignore'
-      - '.dockerignore'
+      - "**.md"
+      - "**.MD"
+      - "**.yml"
+      - "LICENSE"
+      - ".gitattributes"
+      - ".gitignore"
+      - ".dockerignore"
 
 # Set workflow-wide environment variables
 #  - REPO: repo name on dockerhub
 #  - IMAGE: image name on dockerhub
 env:
-#  DOCKERHUB_REPO: sdr-enthusiasts
-#  DOCKERHUB_IMAGE: vrs
+  #  DOCKERHUB_REPO: sdr-enthusiasts
+  #  DOCKERHUB_IMAGE: vrs
   GHCR_IMAGE: sdr-enthusiasts/vrs
   GHCR_REGISTRY: ghcr.io
   GH_LABEL: v3p11
   GHCR_TAG: v3p11
 
 jobs:
-
   workflow-dispatch:
     name: Triggered via Workflow Dispatch?
     # only run this step if workflow dispatch triggered
@@ -52,7 +51,7 @@ jobs:
   #   name: Run hadolint against docker files
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - uses: actions/checkout@v4
+  #     - uses: actions/checkout@v4.1.5
   #       with:
   #         ref: {{ env.GH_LABEL }}
   #     - name: Pull hadolint/hadolint:latest Image
@@ -65,10 +64,9 @@ jobs:
     # needs: [hadolint]
     runs-on: ubuntu-latest
     steps:
-
       # Check out our code
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.5
         with:
           fetch-depth: 0
           ref: ${{ env.GH_LABEL }}
