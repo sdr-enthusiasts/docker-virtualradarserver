@@ -95,7 +95,7 @@ jobs:
 
       # Build "latest"
       - name: Build & Push - latest
-        uses: docker/build-push-action@v6.3.0
+        uses: docker/build-push-action@v6.4.1
         with:
           context: .
           file: ./Dockerfile
