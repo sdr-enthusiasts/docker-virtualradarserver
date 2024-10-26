@@ -51,7 +51,7 @@ jobs:
   #   name: Run hadolint against docker files
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - uses: actions/checkout@v4.2.1
+  #     - uses: actions/checkout@v4.2.2
   #       with:
   #         ref: {{ env.GH_LABEL }}
   #     - name: Pull hadolint/hadolint:latest Image
@@ -66,7 +66,7 @@ jobs:
     steps:
       # Check out our code
       - name: Checkout
-        uses: actions/checkout@v4.2.1
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
           ref: ${{ env.GH_LABEL }}
