@@ -17,7 +17,6 @@ version: '3.8'
 services:
   vrs:
     image: ghcr.io/sdr-enthusiasts/vrs:latest
-    tty: true
     container_name: vrs
     restart: unless-stopped
     ports:
