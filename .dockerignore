@@ -1,4 +1,4 @@
-.trunk/**
-.DS_Store
 .direnv
+source-stubs
 .pre-commit-config.yaml
+.envrc

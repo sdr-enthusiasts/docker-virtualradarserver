@@ -72,7 +72,7 @@ if [ ! -e "${VRS_CONFIG_DIR}/PluginsConfiguration.txt" ]
           echo "[$APPNAME][$(date)] PluginsConfiguration.txt not found, adding template - OK"
         else
           echo "[$APPNAME][$(date)] PluginsConfiguration.txt not found, adding template - Failure"
-      fi  
+      fi
   else
     echo "[$APPNAME][$(date)] PluginsConfiguration.txt found, not touching anything"
 fi

@@ -159,9 +159,9 @@ do
             else
               echo "[$APPNAME][$(date)] No custom markers downloaded, not set in the yaml."
             fi
-        else  
+        else
           echo "[$APPNAME][$(date)] No changes found, nothing was downloaded."
-      fi      
+      fi
       #BaseSation SQB Update
       if [[ -n "${VRS_DB_UPDATE_POLICY_FULLAUTO}" ]]
       then
@@ -203,7 +203,7 @@ do
 #              echo "[$APPNAME][$(date)] Prior backup moved to secondary."
 #            else
 #              echo "[$APPNAME][$(date)] No prior backup found."
-#          fi 
+#          fi
           echo "[$APPNAME][$(date)] Create a backup of the BaseStation.sqb"
           if [[ -n "${VRS_DB_UPDATE_BACKUP_UNCOMPRESSED}" ]]
             then
@@ -220,8 +220,8 @@ do
                   echo "[$APPNAME][$(date)] Uncompressed Backup of BaseStation.sqb - OK"
                 else
                   echo "[$APPNAME][$(date)] Uncompressed Backup of BaseStation.sqb - FAIL!"
-                  SQBFAIL=1 
-              fi                
+                  SQBFAIL=1
+              fi
             else
               if [ -e "${VRS_CONFIG_DIR}/db/Basestation_Backup.sqb.gz" ]
                 then
@@ -236,7 +236,7 @@ do
                   echo "[$APPNAME][$(date)] Compressed Backup of BaseStation.sqb - OK"
                 else
                   echo "[$APPNAME][$(date)] Compressed Backup of BaseStation.sqb - FAIL!"
-                  SQBFAIL=1 
+                  SQBFAIL=1
               fi
           fi
           #Starting the merge process - but check for any fails first. If one is found, we'll nope out here
@@ -274,8 +274,8 @@ do
                       then
                         echo "[$APPNAME][$(date)] Uncompressed Restore of BaseStation.sqb - OK"
                       else
-                        echo "[$APPNAME][$(date)] Uncompressed Restore of BaseStation.sqb - FAIL!"                  
-                    fi 
+                        echo "[$APPNAME][$(date)] Uncompressed Restore of BaseStation.sqb - FAIL!"
+                    fi
                   else
                     #compressed restore
                     echo "[$APPNAME][$(date)] Sleeping for 2 Seconds to let VRS do it's thing with the db"
@@ -298,7 +298,7 @@ do
       else
         echo "[$APPNAME][$(date)] VRS_DB_UPDATE_POLICY_FULLAUTO not set, skipped DB updates"
       fi
-    
+
       #cleaning up downloaded files
       [[ -f "${VRS_CONFIG_DIR}/silhouettes.zip" ]] && rm -f "${VRS_CONFIG_DIR}/silhouettes.zip"
       [[ -f "${VRS_CONFIG_DIR}/OperatorFlags.zip" ]] && rm -f "${VRS_CONFIG_DIR}/OperatorFlags.zip"
