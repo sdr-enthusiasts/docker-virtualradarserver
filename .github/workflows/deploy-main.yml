@@ -7,25 +7,16 @@ on:
       reason:
         required: false
         description: "Reason for running this workflow"
-  push:
-    branches:
-      - main
-    # Don't trigger if it's just a documentation update
-    paths:
-      - "rust/**"
-      - "Dockerfile**"
-      - "rootfs/**"
-
-# Set workflow-wide environment variables
-#  - REPO: repo name on dockerhub
-#  - IMAGE: image name on dockerhub
-env:
-  #  DOCKERHUB_REPO: sdr-enthusiasts
-  #  DOCKERHUB_IMAGE: vrs
-  GHCR_IMAGE: sdr-enthusiasts/vrs
-  GHCR_REGISTRY: ghcr.io
-  GH_LABEL: main
-  GHCR_TAG: latest
+      use_test_image:
+        required: false
+        type: boolean
+        description: "Use base image testpr"
+        default: false
+      base_variant:
+        required: false
+        type: string
+        description: "Debian codename to build on the next-release base images (e.g. forky). Blank builds on stable."
+        default: ""
 
 jobs:
   workflow-dispatch:
@@ -40,54 +31,26 @@ jobs:
       - name: Log dispatch reason
         env:
           INPUTS_REASON: ${{ github.event.inputs.reason }}
+          INPUTS_USE_TEST_IMAGE: ${{ github.event.inputs.use_test_image }}
+          INPUTS_BASE_VARIANT: ${{ github.event.inputs.base_variant }}
         run: |
           echo "Workflow dispatch reason: $INPUTS_REASON"
+          echo "Use test image: $INPUTS_USE_TEST_IMAGE"
+          echo "Base variant: ${INPUTS_BASE_VARIANT:-none (stable)}"
 
-  deploy_ghcr_multiarch:
-    name: Deploy ghcr.io (Multi-Arch)
-    runs-on: ubuntu-latest
-    steps:
-      # Check out our code
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-          ref: ${{ env.GH_LABEL }}
-
-      # Log into ghcr (so we can push images)
-      - name: Login to ghcr.io
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
-        with:
-          registry: ${{ env.GHCR_REGISTRY }}
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # Get metadata from repo
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
-        with:
-          images: ${{ env.GHCR_REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      # Set up QEMU for multi-arch builds
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4.2.0
-
-      # Set up buildx for multi platform builds
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
-        with:
-          driver-opts: image=moby/buildkit:v0.10.6
-
-      # Build "latest"
-      - name: Build & Push - latest
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
-        with:
-          context: .
-          file: ./Dockerfile
-          no-cache: true
-          platforms: linux/amd64,linux/arm/v7,linux/arm64
-          push: true
-          tags: ghcr.io/${{ env.GHCR_IMAGE }}:${{ env.GHCR_TAG }}
-          labels: ${{ steps.meta.outputs.labels }}
+  deploy:
+    name: Deploy
+    uses: sdr-enthusiasts/common-github-workflows/.github/workflows/sdre.yml@662dadfa94ef654eefa453cdd224697b6282ab7a # main
+    with:
+      push_enabled: true
+      push_destinations: ghcr.io
+      ghcr_repo_owner: ${{ github.repository_owner }}
+      # The image is published as ghcr.io/sdr-enthusiasts/vrs, not under the
+      # repository name.
+      ghcr_repo: sdr-enthusiasts/vrs
+      build_latest: ${{ github.event.inputs.use_test_image == 'false' || github.event.inputs.use_test_image == '' }}
+      build_baseimage_test: ${{ github.event.inputs.use_test_image == 'true' }}
+      build_baseimage_url: :base/:base-test-pr
+      base_variant: ${{ github.event.inputs.base_variant }}
+    secrets:
+      ghcr_token: ${{ secrets.GITHUB_TOKEN }}
